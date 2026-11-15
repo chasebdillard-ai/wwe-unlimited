@@ -302,7 +302,7 @@
     </style>
       <link rel="stylesheet" id="lu-css" href="lucha.css" />
   <script id="eotn-data">window.EOTN_EVENTS=[[1794790800, "n5xNQPgR4Fg", "WWE Backlash 2008", 10132], [1794877200, "kJRzqQwZ7po", "WCW Halloween Havoc 1998", 11287]];</script>
-<style id="eotn-hero-css">.x-feat__bg img.x-eotn{object-position:center}.x-feat [data-h="tag"].is-eotn{color:#d4a017;letter-spacing:.14em}.x-feat .pill.is-live{background:#d90429;color:#fff}</style>
+<style id="eotn-hero-css">.x-feat__bg img.x-eotn{object-position:center}.x-feat [data-h="tag"].is-eotn{color:#d4a017;letter-spacing:.14em}.x-feat .pill.is-live{background:#d90429;color:#fff}.eotn-strap{position:absolute;top:clamp(12px,2.2vw,22px);right:clamp(12px,2.2vw,22px);z-index:3;display:flex;align-items:stretch;font-family:Impact,"Arial Black","Helvetica Neue",Arial,sans-serif;text-transform:uppercase;font-style:italic;line-height:1;box-shadow:0 6px 22px rgba(0,0,0,.55);transform:skewX(-8deg);pointer-events:none}.eotn-strap[hidden]{display:none}.eotn-strap span{padding:.5em .75em;font-size:clamp(15px,2vw,26px);letter-spacing:.02em}.eotn-strap .a{background:#fff;color:#111}.eotn-strap .b{background:#d90429;color:#fff}.eotn-strap .b b{color:#ffd23f;font-weight:inherit}</style>
 </head>
   <body>
     <div class="page" id="top">
@@ -324,7 +324,7 @@
       </header>
       <main class="main">
         <div class="x-view" id="v-home">
-          <section class="x-feat" data-hero="home" aria-roledescription="carousel" aria-label="Featured events">
+          <section class="x-feat" data-hero="home" aria-roledescription="carousel" aria-label="Featured events"><div class="eotn-strap" hidden aria-hidden="true"><span class="a">Streams</span><span class="b" data-strap></span></div>
             <div class="x-feat__bg" data-h="bg"><img class="x-poster x-eotn" id="eotn-poster" src="" alt="Event of the Night" /><img class="x-poster" id="ss-poster" src="survivor_series_2026_poster.jpg" alt="Survivor Series: WarGames, Houston, Saturday November 28: Roman Reigns behind the cage" /></div>
             <div class="x-feat__copy">
               <p class="x-tag" data-h="tag">Featured</p>
@@ -4090,9 +4090,10 @@
             [].forEach.call(q("dots").children, function (b, k) { b.setAttribute("aria-current", k === h.i ? "true" : "false"); });
             el.classList.toggle("is-poster", !!it.special);
             var pb = q("play"), ib = q("info"), lb = q("list");
-            delete pb.dataset.eotn; delete ib.dataset.eotn; q("tag").classList.remove("is-eotn"); // EOTN:show
+            delete pb.dataset.eotn; delete ib.dataset.eotn; q("tag").classList.remove("is-eotn"); var _st = el.querySelector(".eotn-strap"); if (_st) _st.hidden = !it.eotn; // EOTN:show
             if (it.eotn) {
               it.refresh();
+              if (_st) _st.querySelector("[data-strap]").innerHTML = it.strap;
               q("tag").textContent = it.tag; q("tag").classList.add("is-eotn");
               q("title").textContent = it.title;
               q("sub").textContent = it.sub;
@@ -4155,6 +4156,9 @@
             s.sub = live ? "On the air now on WWE Unlimited Live, Channel 4. Jump in where everyone else is." : over ? "That's a wrap. Stay tuned to WWE Unlimited." : day + " at " + tm + " on WWE Unlimited Live, Channel 4. One event, one night, everyone watching together.";
             s.badge = live ? "\u25cf LIVE NOW" : day + " \u00b7 " + tm;
             s.live = live;
+            var hr = 20; try { hr = +new Date(e[0] * 1000).toLocaleString("en-US", { hour: "numeric", hour12: false, timeZone: "America/New_York" }) % 24; } catch (x) {}
+            var h12 = function (v) { v = (v + 24) % 24; return v % 12 || 12; };
+            s.strap = "<b>" + (day === "Tonight" || live || !day ? "Tonight" : day === "Tomorrow" ? "Tomorrow" : day) + "</b> at " + h12(hr) + "/" + h12(hr - 1) + '<small style="text-transform:none;font-size:1em">c</small>';
             s.btn = live ? "&#9654; Watch Live" : "&#9654; Tune In";
           };
           s.refresh();
