@@ -125,7 +125,7 @@
       var p;
       if (up) {
         var nm = (f.querySelector("#lv-name").value || "").trim(), ph = (f.querySelector("#lv-ph").value || "").trim() || who.phone;
-        p = post("/auth/v1/signup", { email: who.email, password: pw, data: { display_name: nm || (who.phone ? "Member" : who.email.split("@")[0]), phone: ph } })
+        p = post("/auth/v1/signup", { email: who.email, password: pw, data: { display_name: nm || (who.phone ? "Member" : who.email.split("@")[0]), phone: ph, signup_site: "WWE Unlimited" } })
           .then(function (j) { if (setSession(j)) return j; return post("/auth/v1/token?grant_type=password", { email: who.email, password: pw }); });
       } else p = post("/auth/v1/token?grant_type=password", { email: who.email, password: pw });
       p.then(function (j) { if (j && j.access_token) setSession(j); if (!session) throw new Error("Couldn't sign in."); renderLive(); },
