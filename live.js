@@ -90,6 +90,7 @@
   btn.addEventListener("click", open);
   if (location.hash === "#live") setTimeout(open, 50);
 
+  window.__lvOpen = function (ch) { if (ch) { cur = ch; try { localStorage.setItem("live_ch_" + (CFG.site || ""), ch); } catch (e) {} } if (!ov.hidden && DATA && session) { tune(ch); return; } open(); }; // EOTN:open
   function open() { ov.hidden = false; d.documentElement.style.overflow = "hidden"; if (location.hash !== "#live") history.replaceState(null, "", "#live"); render(); }
   function close() {
     rtStop(); ov.hidden = true; d.documentElement.style.overflow = ""; stop();

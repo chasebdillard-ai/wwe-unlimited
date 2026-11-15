@@ -301,7 +301,9 @@
       .x-cw__x:hover, .x-cw__x:focus-visible { background: #000; }
     </style>
       <link rel="stylesheet" id="lu-css" href="lucha.css" />
-  </head>
+  <script id="eotn-data">window.EOTN_EVENTS=[[1794790800, "n5xNQPgR4Fg", "WWE Backlash 2008", 10132], [1794877200, "kJRzqQwZ7po", "WCW Halloween Havoc 1998", 11287]];</script>
+<style id="eotn-hero-css">.x-feat__bg img.x-eotn{object-position:center}.x-feat [data-h="tag"].is-eotn{color:#d4a017;letter-spacing:.14em}.x-feat .pill.is-live{background:#d90429;color:#fff}</style>
+</head>
   <body>
     <div class="page" id="top">
       <header class="x-top">
@@ -323,7 +325,7 @@
       <main class="main">
         <div class="x-view" id="v-home">
           <section class="x-feat" data-hero="home" aria-roledescription="carousel" aria-label="Featured events">
-            <div class="x-feat__bg" data-h="bg"><img class="x-poster" id="ss-poster" src="survivor_series_2026_poster.jpg" alt="Survivor Series: WarGames, Houston, Saturday November 28: Roman Reigns behind the cage" /></div>
+            <div class="x-feat__bg" data-h="bg"><img class="x-poster x-eotn" id="eotn-poster" src="" alt="Event of the Night" /><img class="x-poster" id="ss-poster" src="survivor_series_2026_poster.jpg" alt="Survivor Series: WarGames, Houston, Saturday November 28: Roman Reigns behind the cage" /></div>
             <div class="x-feat__copy">
               <p class="x-tag" data-h="tag">Featured</p>
               <h1 data-h="title"><span class="x-wm"><img class="x-wm__img" src="wwe.png" alt="WWE" />Unlimited</span></h1>
@@ -4088,6 +4090,18 @@
             [].forEach.call(q("dots").children, function (b, k) { b.setAttribute("aria-current", k === h.i ? "true" : "false"); });
             el.classList.toggle("is-poster", !!it.special);
             var pb = q("play"), ib = q("info"), lb = q("list");
+            delete pb.dataset.eotn; delete ib.dataset.eotn; q("tag").classList.remove("is-eotn"); // EOTN:show
+            if (it.eotn) {
+              it.refresh();
+              q("tag").textContent = it.tag; q("tag").classList.add("is-eotn");
+              q("title").textContent = it.title;
+              q("sub").textContent = it.sub;
+              q("meta").innerHTML = '<span class="pill' + (it.live ? " is-live" : "") + '">' + esc(it.badge) + "</span>";
+              delete pb.dataset.play; delete pb.dataset.ssplay; pb.dataset.eotn = "1"; pb.innerHTML = it.btn;
+              delete ib.dataset.info; delete ib.dataset.go; ib.dataset.eotn = "1"; ib.textContent = "Channel guide";
+              delete lb.dataset.mylist; lb.hidden = true;
+              return;
+            }
             if (it.special) {
               q("tag").textContent = it.tag;
               q("title").textContent = it.title;
@@ -4122,7 +4136,32 @@
         function isCat(it, cs) { return cs.indexOf(it.category) > -1; }
         var EPEV = ["Full Episodes", "Full Events"];
         var SS_SLIDE = { special: true, tag: "Curated playlist", title: "Road to Survivor Series: WarGames", sub: "393 videos · 1987 to 2026", badge: "Sat Nov 28 · 6 PM ET · Houston", go: "ss" };
-        Hero("home", [SS_SLIDE].concat(pick(FEATURED, items, byShow[SHOWS[0]])), function (it) { return it.show; });
+        // EOTN:hero, tonight's (or the next) Event of the Night leads the home carousel
+        var EOTN_SLIDE = (function () {
+          var L = window.EOTN_EVENTS || [], now = Date.now() / 1000, e = null;
+          for (var k = 0; k < L.length; k++) if (now < L[k][0] + L[k][3]) { e = L[k]; break; }
+          if (!e) return null;
+          var img = document.getElementById("eotn-poster"); if (img) { img.onerror = function () { img.onerror = null; img.src = "https://i.ytimg.com/vi/" + e[1] + "/hqdefault.jpg"; }; img.src = "https://i.ytimg.com/vi/" + e[1] + "/maxresdefault.jpg"; }
+          var s = { special: true, eotn: true, title: e[2] };
+          s.refresh = function () {
+            var n = Date.now() / 1000, live = n >= e[0] && n < e[0] + e[3], over = n >= e[0] + e[3];
+            var day = "", tm = "8:00 PM ET";
+            try {
+              var f = function (x) { return new Date(x * 1000).toLocaleDateString("en-US", { timeZone: "America/New_York" }); };
+              tm = new Date(e[0] * 1000).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) + " ET";
+              day = f(e[0]) === f(n) ? "Tonight" : f(e[0]) === f(n + 86400) ? "Tomorrow" : new Date(e[0] * 1000).toLocaleDateString("en-US", { weekday: "long", timeZone: "America/New_York" });
+            } catch (x) {}
+            s.tag = "Event of the Night";
+            s.sub = live ? "On the air now on WWE Unlimited Live, Channel 4. Jump in where everyone else is." : over ? "That's a wrap. Stay tuned to WWE Unlimited." : day + " at " + tm + " on WWE Unlimited Live, Channel 4. One event, one night, everyone watching together.";
+            s.badge = live ? "\u25cf LIVE NOW" : day + " \u00b7 " + tm;
+            s.live = live;
+            s.btn = live ? "&#9654; Watch Live" : "&#9654; Tune In";
+          };
+          s.refresh();
+          return s;
+        })();
+        if (!EOTN_SLIDE) { var _ep = document.getElementById("eotn-poster"); if (_ep) _ep.parentNode.removeChild(_ep); }
+        Hero("home", (EOTN_SLIDE ? [EOTN_SLIDE] : []).concat([SS_SLIDE]).concat(pick(FEATURED, items, byShow[SHOWS[0]])), function (it) { return it.show; });
         var nxtEvents = where(function (it) { return it.hub === "NXT" && it.category === "Full Events"; });
         Hero("nxt", pick([/^NXT TakeOver: Brooklyn –/, /^NXT TakeOver: Respect/, /^NXT TakeOver: New York/, /^NXT TakeOver: WarGames 2017/, /^NXT TakeOver: Stand & Deliver 2021 – Night 2/], nxtEvents, nxtEvents.filter(function (it) { return /TakeOver/.test(it.title); }).concat(nxtEvents)), function () { return "NXT Full Event"; });
         var wcwPPV = where(function (it) { return it.hub === "WCW" && it.category === "Full Events" && it.show !== "WCW Clash of the Champions"; });
@@ -4913,6 +4952,7 @@
   btn.addEventListener("click", open);
   if (location.hash === "#live") setTimeout(open, 50);
 
+  window.__lvOpen = function (ch) { if (ch) { cur = ch; try { localStorage.setItem("live_ch_" + (CFG.site || ""), ch); } catch (e) {} } if (!ov.hidden && DATA && session) { tune(ch); return; } open(); }; // EOTN:open
   function open() { ov.hidden = false; d.documentElement.style.overflow = "hidden"; if (location.hash !== "#live") history.replaceState(null, "", "#live"); render(); }
   function close() {
     rtStop(); ov.hidden = true; d.documentElement.style.overflow = ""; stop();
@@ -5813,5 +5853,6 @@ document.getElementById('espn-promo-x').addEventListener('click',function(e){e.p
 })();
 
 </script>
+<script id="eotn-click">document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-eotn]");if(!b)return;e.preventDefault();e.stopImmediatePropagation();if(window.__lvOpen)window.__lvOpen("eotn");else{try{localStorage.setItem("live_ch_wwe","eotn")}catch(x){}location.hash="#live";location.reload()}},true);</script>
 </body>
 </html>
