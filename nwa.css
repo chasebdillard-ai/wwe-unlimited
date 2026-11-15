@@ -214,3 +214,13 @@ body:not(.nw-on) .nw-float { display: none; }
 .x-promo--nwa .nw-pst { position: absolute; z-index: -1; width: 22px; height: 22px; margin: -11px; opacity: .7; background: radial-gradient(circle, #fff 0 1.5px, rgba(255, 213, 90, .5) 2.5px, transparent 6px), linear-gradient(90deg, transparent 45%, rgba(255, 213, 90, .7) 50%, transparent 55%) center / 100% 1.5px no-repeat, linear-gradient(0deg, transparent 45%, rgba(255, 213, 90, .7) 50%, transparent 55%) center / 1.5px 100% no-repeat; animation: nw-twinkle 4s ease-in-out infinite; --s: 1; }
 @keyframes nw-twinkle { 0%, 100% { opacity: .15; transform: scale(calc(var(--s) * .7)) rotate(0deg); } 50% { opacity: 1; transform: scale(var(--s)) rotate(12deg); } }
 @media (max-width: 699px) { .x-promo--nwa { justify-content: flex-start; } .x-promo--nwa .x-promo__mark { height: 60px; } .x-promo--nwa strong { font-size: 19px; } }
+
+/* tidier mobile tab bar: smaller, evenly sized logos (applies site-wide) */
+@media (max-width: 699px) {
+  nav.x-tabbar a { grid-template-rows: 20px auto; align-content: center; align-items: center; gap: 4px; padding: 0 1px; overflow: hidden; }
+  nav.x-tabbar a > img, nav.x-tabbar a > svg { align-self: center; justify-self: center; margin: 0 auto; }
+  nav.x-tabbar .x-tl { height: 15px; max-width: 30px; width: auto; }
+  nav.x-tabbar .x-tl.x-tl--lucha { height: 19px; max-width: 22px; }
+  nav.x-tabbar .x-tl.x-tl--nwa { height: 19px; width: 19px; max-width: 19px; }
+  nav.x-tabbar svg { width: 19px; height: 19px; }
+}
