@@ -290,6 +290,15 @@
       .x-card:hover .x-me__cta { color: var(--x-red); }
       .x-me-view .x-grid { min-width: 0; }
       @media (max-width: 699px) { .x-me__lock { height: 44px; } .x-me__lock .x-me__logo { height: 40px; } .x-me__lock .x-me__plat { height: 16px; } }
+      /* CW:wwe_cw */
+      .x-cw__head { margin-right: auto; }
+      .x-cw__head h2 { margin: 0; }
+      .x-cw__head p { margin: 2px 0 0; font: var(--type-body); color: var(--text-secondary); }
+      .x-cw__it { position: relative; display: grid; scroll-snap-align: start; min-width: 0; }
+      .x-cw__bar { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(0, 0, 0, .55); z-index: 2; }
+      .x-cw__bar i { display: block; height: 100%; background: var(--x-red, #e10600); }
+      .x-cw__x { position: absolute; top: 6px; right: 6px; z-index: 3; width: 28px; height: 28px; padding: 0; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .7); background: rgba(0, 0, 0, .72); color: #fff; font: 700 16px/1 sans-serif; cursor: pointer; }
+      .x-cw__x:hover, .x-cw__x:focus-visible { background: #000; }
     </style>
   </head>
   <body>
@@ -326,6 +335,7 @@
             </div>
             <div class="x-dots" data-h="dots" role="group" aria-label="Choose featured event"></div>
           </section>
+          <section class="x-shelf" id="cw" aria-labelledby="cw-h" hidden></section>
           <div class="x-promos">
             <a class="x-promo x-promo--nxt" href="#nxt"><img class="x-promo__mark" src="nxt.png" alt="NXT" /><span class="x-promo__b"><strong>NXT Hub &rsaquo;</strong><small><span data-hubcount="NXT"></span> titles · TakeOvers, episodes, matches</small></span></a>
             <a class="x-promo x-promo--wcw" href="#wcw"><img class="x-promo__mark x-logo--wcw" src="wcw.png" alt="WCW" /><span class="x-promo__b"><strong>WCW Hub &rsaquo;</strong><small><span data-hubcount="WCW"></span> titles · PPVs, Nitro, Thunder, Clash</small></span></a>
@@ -4607,11 +4617,81 @@
           if (lastFocus && lastFocus.focus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
         }
 
+        // Continue Watching (this device only, localStorage "wwe_cw", newest first, max 20)
+        var CWK = "wwe_cw", cwById = {};
+        items.forEach(function (it) { var v = vid(it); if (v && !cwById[v]) cwById[v] = it; });
+        function cwLoad() { try { var a = JSON.parse(localStorage.getItem(CWK) || "[]"); return Array.isArray(a) ? a.filter(function (x) { return x && x.id; }) : []; } catch (e) { return []; } }
+        function cwSave(a) { try { localStorage.setItem(CWK, JSON.stringify(a.slice(0, 20))); } catch (e) { /* storage blocked or full */ } }
+        function cwGet(id) { var a = cwLoad(); for (var i = 0; i < a.length; i++) if (a[i].id === id) return a[i]; return null; }
+        function cwRecord(it, id) {
+          var a = cwLoad(), old = null;
+          a = a.filter(function (x) { if (x.id === id) { old = x; return false; } return true; });
+          var n = { id: id, title: it.title || "", thumb: "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg", route: "play:" + id,
+            show: it.show || (it._Q && it._Q.name) || "", ts: Date.now(), prog: old && old.prog ? old.prog : 0, dur: old && old.dur ? old.dur : (it.hours ? Math.round(it.hours * 3600) : 0) };
+          a.unshift(n); cwSave(a);
+        }
+        function cwProgress(id, t, d) {
+          var a = cwLoad(), ch = false;
+          a.forEach(function (x) { if (x.id === id) { if (d > 0) x.dur = Math.round(d); x.prog = (x.dur > 0 && t > x.dur - 30) ? 0 : Math.round(t); x.ts = Date.now(); ch = true; } });
+          if (ch) cwSave(a);
+        }
+        function cwRemove(id) { cwSave(cwLoad().filter(function (x) { return x.id !== id; })); }
+        function cwStart(id) { var x = cwGet(id); if (!x || !(x.prog > 10)) return 0; if (x.dur && x.prog > x.dur - 30) return 0; return Math.floor(x.prog); }
+        function cwCard(x) {
+          var pct = x.prog && x.dur ? Math.max(2, Math.min(100, Math.round(x.prog / x.dur * 100))) : 0;
+          var left = x.prog && x.dur ? Math.max(1, Math.round((x.dur - x.prog) / 60)) + " min left" : "";
+          return '<div class="x-cw__it"><button type="button" class="x-card" data-cwplay="' + esc(x.id) + '" aria-label="Continue ' + esc(x.title) + '"><span class="x-thumb"><img loading="lazy" src="' + esc(x.thumb || ("https://i.ytimg.com/vi/" + x.id + "/mqdefault.jpg")) + '" alt="" />' +
+            (pct ? '<span class="x-cw__bar" aria-hidden="true"><i style="width:' + pct + '%"></i></span>' : "") +
+            '</span><span class="x-card__t">' + esc(x.title) + '</span><span class="x-card__m">' + esc([x.show, left].filter(Boolean).join(" · ")) + "</span></button>" +
+            '<button type="button" class="x-cw__x" data-cwx="' + esc(x.id) + '" aria-label="Remove ' + esc(x.title) + ' from Continue Watching" title="Remove">&times;</button></div>';
+        }
+        function drawCW() {
+          var sec = $("cw"); if (!sec) return;
+          var a = cwLoad();
+          sec.hidden = !a.length;
+          sec.innerHTML = a.length ? '<div class="x-shelf__head"><div class="x-cw__head"><h2 id="cw-h">Continue Watching</h2><p>Pick up where you left off.</p></div>' +
+            '<button type="button" class="x-arr" data-scroll="-1" aria-label="Scroll left">&lsaquo;</button><button type="button" class="x-arr" data-scroll="1" aria-label="Scroll right">&rsaquo;</button></div>' +
+            '<div class="x-rail">' + a.map(cwCard).join("") + "</div>" : "";
+        }
+        function cwOpen(id) {
+          var x = cwGet(id); if (!x) return;
+          var it = cwById[id];
+          if (!it) { var Q = { name: x.show || "Continue Watching", len: function () { return 1; }, make: function () { return it; } };
+            it = { _id: id, title: x.title, show: x.show || "Continue Watching", _th: x.thumb, hours: x.dur ? x.dur / 3600 : null, _m: x.show || "", _Q: Q, _k: 0 }; }
+          play(it);
+        }
+        document.addEventListener("click", function (e) {
+          var b = e.target.closest && e.target.closest("[data-cwx],[data-cwplay]"); if (!b) return;
+          e.preventDefault();
+          if (b.dataset.cwx != null) { var r = b.closest(".x-cw__it"), nx = r && (r.nextElementSibling || r.previousElementSibling); cwRemove(b.dataset.cwx); drawCW(); var f = nx && $("cw").querySelector('[data-cwx="' + nx.querySelector("[data-cwx]").dataset.cwx + '"]'); if (f) f.focus({ preventScroll: true }); }
+          else cwOpen(b.dataset.cwplay);
+        });
+        // Progress: the embed reports currentTime/duration via postMessage "infoDelivery" once told we're listening
+        var cwP = null;
+        function cwFlush() { if (cwP && cwP.t >= 0 && Math.round(cwP.t) !== cwP.saved) { cwP.saved = Math.round(cwP.t); cwProgress(cwP.id, cwP.t, cwP.d); } }
+        function cwPing() { var f = $("pl-frame"); if (cwP && f && f.contentWindow) try { f.contentWindow.postMessage(JSON.stringify({ event: "listening", id: 1, channel: "widget" }), "*"); } catch (e) {} }
+        window.addEventListener("message", function (ev) {
+          var f = $("pl-frame");
+          if (!cwP || !f || ev.source !== f.contentWindow || !/^https:\/\/(www\.)?youtube(-nocookie)?\.com$/.test(ev.origin)) return;
+          var d = ev.data; if (typeof d === "string") { try { d = JSON.parse(d); } catch (e) { return; } }
+          if (!d || !d.info) return;
+          cwP.heard = true;
+          if (typeof d.info.currentTime === "number") cwP.t = d.info.currentTime;
+          if (typeof d.info.duration === "number" && d.info.duration > 0) cwP.d = d.info.duration;
+        });
+        setInterval(function () { if (!cwP) return; if (!cwP.heard) cwPing(); }, 2000);
+        setInterval(cwFlush, 15000);
+        document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") cwFlush(); });
+        window.addEventListener("pagehide", cwFlush);
+        function cwEnd() { cwFlush(); cwP = null; drawCW(); }
+        drawCW();
+
         // Player
         var cur = null, plFocus = null;
         // A plain embed: no IFrame API, no origin handshake, no automatic redirects
         function embed(id) {
-          return "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(id) + "?autoplay=1&playsinline=1&rel=0";
+          var o = /^https?:/.test(location.origin || "") ? "&origin=" + encodeURIComponent(location.origin) : "", st = cwStart(id);
+          return "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(id) + "?autoplay=1&playsinline=1&rel=0&enablejsapi=1" + o + (st ? "&start=" + st : "");
         }
         // Replace the stage's iframe with a fresh one, so every play starts clean
         function setFrame(src) {
@@ -4654,7 +4734,9 @@
           cur = it;
           var id = vid(it);
           if (id) {
+            try { cwFlush(); cwRecord(it, id); } catch (e) {}
             setFrame(embed(id));
+            try { cwP = { id: id, t: -1, d: 0, heard: false, saved: -1 }; $("pl-frame").addEventListener("load", cwPing); drawCW(); } catch (e) {}
             $("pl-yt").href = "https://www.youtube.com/watch?v=" + encodeURIComponent(id);
           }
           $("pl-title").textContent = it.title;
@@ -4680,6 +4762,7 @@
           if ($("player").hidden) return;
           if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
           $("player").classList.remove("is-theater");
+          try { cwEnd(); } catch (e) {}
           setFrame("about:blank");
           $("player").hidden = true;
           document.documentElement.style.overflow = "";
