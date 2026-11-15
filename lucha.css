@@ -320,3 +320,17 @@ body.lu-on .x-tabbar { background: rgba(7, 5, 4, 0.92); border-top-color: rgba(2
   .lu-ep:hover, .lu-ep:focus-visible { transform: none; }
   .lu-ep:hover .lu-ep__art img { transform: scale(1.02); }
 }
+
+/* LU: mobile bottom tab bar gets one column per tab once Lucha is added */
+@media (max-width: 699px) {
+  nav.x-tabbar:has(a[data-lu-tab]) { grid-template-columns: none !important; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+  nav.x-tabbar a { font-size: 11px; white-space: nowrap; }
+  nav.x-tabbar .x-tl--lucha { height: 24px; opacity: .85; filter: drop-shadow(0 0 3px rgba(227, 36, 27, .55)); }
+  nav.x-tabbar a[aria-current="page"] .x-tl--lucha { opacity: 1; }
+}
+
+/* Mobile: keep floating LIVE TV button and ESPN poster above the bottom tab bar so every tab can be tapped */
+@media (max-width: 699px) {
+  .lv-btn { bottom: calc(env(safe-area-inset-bottom, 0px) + 70px) !important; }
+  .espn-promo { bottom: calc(env(safe-area-inset-bottom, 0px) + 70px) !important; }
+}
