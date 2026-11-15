@@ -72,6 +72,13 @@
     ".lv-go{width:100%;margin-top:16px;padding:13px;border:0;border-radius:10px;background:#d90429;color:#fff;font-weight:800;font-size:16px;cursor:pointer}" +
     ".lv-sw{margin-top:12px;text-align:center;font-size:14px}.lv-sw button{background:none;border:0;color:#7fb2ff;font-weight:700;cursor:pointer;font-size:14px}" +
     ".lv-n{font-size:12px;font-weight:700;color:#cfd3dc;background:#0007;padding:2px 6px;border-radius:999px}.lv-watch{position:absolute;top:10px;right:10px;z-index:2;pointer-events:none;background:rgba(217,4,41,.9);padding:4px 9px;border-radius:6px;font-weight:800;font-size:12px}" +
+    ".lv-slate{position:absolute;inset:0;z-index:1;overflow:hidden;background:#050507;display:grid;place-items:center;text-align:center}" +
+    ".lv-sl-bg{position:absolute;inset:-20%;background:radial-gradient(60% 50% at 50% 45%,rgba(212,160,23,.28),transparent 70%),repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px);animation:lvSl 6s ease-in-out infinite}" +
+    ".lv-sl-in{position:relative;padding:44px 4% 4%}.lv-bug{max-width:calc(100% - 200px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lv-sl-k{margin:0 0 2%;font:800 clamp(10px,1.6vw,14px)/1 system-ui,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:#d4a017}" +
+    ".lv-sl-a{margin:0;font:600 clamp(14px,3vw,28px)/1.1 system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#e9e9ee}" +
+    ".lv-sl-b{margin:.15em 0 .35em;font:900 clamp(30px,8vw,84px)/1 system-ui,sans-serif;letter-spacing:.04em;color:#fff;text-shadow:0 0 30px rgba(217,4,41,.6);animation:lvGl 2.4s ease-in-out infinite}" +
+    ".lv-sl-n{margin:0;font:600 clamp(12px,2vw,17px)/1.35 system-ui,sans-serif;color:#cfd3dc}.lv-sl-n b{color:#fff}.lv-sl-c{margin:.5em 0 0;font:800 clamp(13px,2.2vw,20px)/1 ui-monospace,Menlo,monospace;color:#d4a017;letter-spacing:.06em}" +
+    "@keyframes lvSl{50%{transform:scale(1.08) translateY(2%)}}@keyframes lvGl{50%{text-shadow:0 0 46px rgba(217,4,41,.95),0 0 4px #fff}}" + /* EOTN:css */
     ".lv-err{color:#ff7a8a;font-size:14px;margin-top:10px;min-height:1em}.lv-me{font-size:13px;color:#9aa0ad}.lv-me button{background:none;border:0;color:#7fb2ff;cursor:pointer;font-size:13px}";
   var st = d.createElement("style"); st.textContent = css; d.head.appendChild(st);
 
@@ -190,6 +197,7 @@
         L.forEach(function (x) { starts.push(tot); tot += x[2]; });
         DATA[k] = { items: L, starts: starts, total: tot };
       });
+      (CFG.channels || []).forEach(function (c) { if (c.events) DATA[c.id] = { sched: c.events.slice().sort(function (x, y) { return x[0] - y[0]; }), items: [], starts: [], total: 0 }; }); // EOTN:data
       return DATA;
     });
   }
@@ -238,6 +246,7 @@
     ov.querySelector(".lv-wrap").style.setProperty("--c", cfg.color || "#d90429");
     ov.querySelector(".lv-bug").textContent = "● LIVE · " + (cfg.name || "");
     rtTrack(); counts();
+    if (DATA[ch] && DATA[ch].sched) { tuneSched(ch); return; } unslate(); // EOTN:tune
     var c = DATA[ch], t = nowS(), a = at(ch, t), idx = a.i, off = a.off, begin = a.begin;
     if (forceIdx != null) { idx = forceIdx % c.items.length; off = 0; begin = t; }
     var it = c.items[idx]; curIdx = idx;
@@ -255,6 +264,7 @@
         events: {
           onReady: function (e) { try { e.target.playVideo(); } catch (x) {} },
           onError: function () { // can't play here: move on to the next program
+            if (DATA[cur] && DATA[cur].sched) { slate(null, 1); return; } // EOTN:err
             if (++skips > 8) return; tune(cur, curIdx + 1);
           },
           onStateChange: function (e) { if (e.data === 0) { skips = 0; tune(cur); } }
@@ -262,6 +272,73 @@
     });
   }
 
+  // EOTN:sched, "Event of the Night": one scheduled event per night at 8 PM ET. Otherwise it shows a looping "Stay tuned" slate.
+  function etTime(t) { try { return new Date(t * 1000).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }).replace(/ /g, "\u00a0") + "\u00a0ET"; } catch (e) { return fmtTime(t); } }
+  function etDay(t) {
+    try {
+      var f = function (x) { return new Date(x * 1000).toLocaleDateString("en-US", { timeZone: "America/New_York" }); };
+      var n = nowS();
+      if (f(t) === f(n)) return "Tonight";
+      if (f(t) === f(n + 86400)) return "Tomorrow";
+      return new Date(t * 1000).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "America/New_York" });
+    } catch (e) { return ""; }
+  }
+  function hms(s) { s = Math.max(0, Math.floor(s)); var h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (x < 10 ? "0" : "") + x; }
+  function schedNext(c, t) { for (var i = 0; i < c.sched.length; i++) if (c.sched[i][0] > t) return c.sched[i]; return null; }
+  function schedNow(c, t) { for (var i = 0; i < c.sched.length; i++) { var e = c.sched[i]; if (e[0] <= t && t < e[0] + e[3]) return e; } return null; }
+  function unslate() {
+    var sc = ov.querySelector(".lv-screen"); if (!sc) return;
+    var s = sc.querySelector(".lv-slate"); if (s) s.parentNode.removeChild(s);
+    var p = sc.querySelector("#lv-player"); if (!p) { p = d.createElement("div"); p.id = "lv-player"; sc.appendChild(p); }
+    p.style.display = "";
+  }
+  function slate(nx, trouble) {
+    var sc = ov.querySelector(".lv-screen"); if (!sc) return;
+    if (player && player.destroy) { try { player.destroy(); } catch (e) {} } player = null;
+    sc.querySelectorAll("#lv-player,.lv-slate").forEach(function (n) { n.parentNode.removeChild(n); });
+    var p = d.createElement("div"); p.id = "lv-player"; p.style.display = "none"; sc.appendChild(p);
+    var s = d.createElement("div"); s.className = "lv-slate";
+    s.innerHTML = '<div class="lv-sl-bg"></div><div class="lv-sl-in"><p class="lv-sl-k">Event of the Night</p>' +
+      '<p class="lv-sl-a">Stay tuned to</p><p class="lv-sl-b">WWE UNLIMITED</p>' +
+      (trouble ? '<p class="lv-sl-n">We\'re having trouble with tonight\'s broadcast. Stay tuned.</p>' :
+        nx ? '<p class="lv-sl-n">Up next: <b>' + esc(nx[2]) + '</b> · ' + etDay(nx[0]) + " " + etTime(nx[0]) + '</p><p class="lv-sl-c" data-cd="' + nx[0] + '"></p>' :
+        '<p class="lv-sl-n">Every night at 8:00 PM ET</p>') + "</div>";
+    sc.appendChild(s);
+  }
+  function tuneSched(ch) {
+    var c = DATA[ch], t = nowS(), ev = schedNow(c, t), nx = schedNext(c, t);
+    clearTimeout(timer); clearInterval(guideTimer);
+    var bar = ov.querySelector(".lv-bar i"), h = "";
+    c.sched.filter(function (e) { return e[0] > t; }).slice(0, 7).forEach(function (e) { h += "<li><b>" + etDay(e[0]) + "<br>" + etTime(e[0]) + "</b><span>" + esc(e[2]) + "</span></li>"; });
+    if (ev) h += "<li><b>" + etTime(ev[0] + ev[3]) + "</b><span>Stay tuned to WWE Unlimited</span></li>";
+    ov.querySelector(".lv-guide").innerHTML = h || "<li><b>8:00 PM ET</b><span>Next event of the night coming soon</span></li>";
+    if (!ev) {
+      ov.querySelector(".lv-title").textContent = "Stay Tuned to WWE Unlimited";
+      if (bar) bar.style.width = "0%";
+      slate(nx);
+      var tick = function () { var el = ov.querySelector("[data-cd]"); if (el) el.textContent = "Starts in " + hms(+el.getAttribute("data-cd") - nowS()); };
+      tick(); guideTimer = setInterval(tick, 1000);
+      if (nx) timer = setTimeout(function () { if (cur === ch) tune(ch); }, Math.min(2147000000, Math.max(1000, (nx[0] - nowS()) * 1000 + 500)));
+      return;
+    }
+    var off = t - ev[0];
+    ov.querySelector(".lv-title").textContent = ev[2];
+    unslate();
+    guideTimer = setInterval(function () { var b = ov.querySelector(".lv-bar i"); if (b) b.style.width = Math.min(100, (nowS() - ev[0]) / ev[3] * 100) + "%"; }, 1000);
+    timer = setTimeout(function () { if (cur === ch) tune(ch); }, Math.max(2, ev[0] + ev[3] - nowS() + 1) * 1000);
+    ytReady().then(function () {
+      if (cur !== ch) return;
+      if (player && player.loadVideoById) { player.loadVideoById({ videoId: ev[1], startSeconds: Math.floor(off) }); return; }
+      player = new YT.Player("lv-player", { videoId: ev[1], host: "https://www.youtube.com",
+        playerVars: { autoplay: 1, start: Math.floor(off), playsinline: 1, rel: 0, modestbranding: 1 },
+        events: {
+          onReady: function (e) { try { e.target.playVideo(); } catch (x) {} },
+          onError: function () { if (DATA[cur] && DATA[cur].sched) slate(null, 1); else if (++skips <= 8) tune(cur, curIdx + 1); },
+          onStateChange: function (e) { if (e.data === 0) { skips = 0; tune(cur); } }
+        } });
+    });
+  }
+  // EOTN:end
   function guide(ch, idx, begin) {
     var c = DATA[ch], h = "", t = begin + c.items[idx][2];
     for (var k = 1; k <= 8; k++) { var it = c.items[(idx + k) % c.items.length]; h += "<li><b>" + fmtTime(t) + "</b><span>" + esc(it[1]) + "</span></li>"; t += it[2]; }
