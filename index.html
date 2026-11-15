@@ -1,0 +1,1386 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>WWE Unlimited</title>
+    <link rel="icon" type="image/png" href="icon.png" />
+    <link rel="apple-touch-icon" href="icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="icon.png" />
+    <meta name="apple-mobile-web-app-title" content="WWE Unlimited" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#0b0b0f" />
+    <link
+      rel="manifest"
+      href="data:application/manifest+json,%7B%22name%22%3A%22WWE%20Unlimited%22%2C%22short_name%22%3A%22WWE%20Unlimited%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230b0b0f%22%2C%22theme_color%22%3A%22%230b0b0f%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22icon.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap"
+    />
+    <link rel="stylesheet" href="hark.css" />
+    <link rel="stylesheet" href="hark-hero.css" />
+    <style>
+      :root { --x-red: var(--fill-system-red); --x-scrim: color-mix(in srgb, var(--fill-primary-on) 88%, transparent); --x-gap: clamp(16px, 4vw, 32px); }
+      [hidden] { display: none !important; }
+      .x-top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 20px; margin: -12px calc(var(--gutter) * -1) 0; padding: calc(env(safe-area-inset-top, 0px) + 8px) var(--gutter) 8px; background: var(--mat-agent); -webkit-backdrop-filter: var(--hark-blur); backdrop-filter: var(--hark-blur); border-bottom: 1px solid var(--stroke-secondary); }
+      .x-logo { display: inline-flex; align-items: center; min-height: var(--tap); font: var(--weight-bold) 20px/1 var(--sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--x-red); text-decoration: none; white-space: nowrap; }
+      .x-logo span { color: var(--text-primary); margin-right: 6px; }
+      .x-wm { display: inline-flex; align-items: center; gap: 0.4em; font-weight: var(--weight-bold); letter-spacing: 0.06em; text-transform: uppercase; line-height: 1; white-space: nowrap; }
+      .x-wm__img { display: block; flex: none; width: 1.6em; height: 1.6em; object-fit: contain; border-radius: 3px; }
+      .x-logo .x-wm__img { width: 28px; height: 28px; }
+      @media (min-width: 700px) { .x-logo .x-wm__img { width: 32px; height: 32px; } }
+      .x-feat h1 .x-wm { color: var(--x-red); }
+      .x-feat h1 .x-wm__img { width: 1.25em; height: 1.25em; }
+      .x-foot-wm { font-size: 16px; color: var(--x-red); }
+      .x-foot-wm .x-wm__img { width: 24px; height: 24px; }
+      .x-nav { display: flex; gap: 2px; }
+      .x-nav a { display: inline-flex; align-items: center; min-height: var(--tap); padding: 0 12px; font: var(--type-label); color: var(--text-secondary); text-decoration: none; border-radius: var(--r-s); }
+      .x-nav a:hover { color: var(--text-primary); }
+      .x-nav a[aria-current="page"] { color: var(--text-primary); box-shadow: inset 0 -2px 0 var(--x-red); border-radius: 0; }
+      .x-count { margin-left: auto; font: var(--type-caption); color: var(--text-secondary); text-align: right; }
+      .x-tabbar { display: none; }
+      .x-spacer { display: none; }
+      .x-view { display: grid; gap: 28px; min-width: 0; }
+      /* featured hero */
+      .x-feat { position: relative; min-height: clamp(400px, 52vw, 560px); display: flex; align-items: flex-end; border-radius: var(--r-l); overflow: hidden; background: var(--fill-tertiary); }
+      .x-feat__bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.9s var(--ease-out); }
+      .x-feat__bg img.is-on { opacity: 1; }
+      .x-feat::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, var(--fill-primary-on) 2%, color-mix(in srgb, var(--fill-primary-on) 70%, transparent) 40%, transparent 78%), linear-gradient(to right, color-mix(in srgb, var(--fill-primary-on) 75%, transparent), transparent 65%); }
+      .x-feat__copy { position: relative; z-index: 2; display: grid; gap: 10px; max-width: 620px; padding: var(--x-gap); padding-bottom: calc(var(--x-gap) + 28px); }
+      .x-feat h1 { font: var(--type-display); }
+      .x-tag { display: flex; align-items: center; gap: 8px; font: var(--type-tag); letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-primary); }
+      .x-tag::before { content: ""; flex: none; width: 3px; height: 12px; border-radius: 2px; background: var(--x-red); }
+      .x-sub { font: var(--type-body); color: var(--text-secondary); }
+      .x-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font: var(--type-small); color: var(--text-secondary); }
+      .x-dots { position: absolute; z-index: 3; left: var(--x-gap); bottom: 8px; display: flex; }
+      .x-dots button { display: grid; place-items: center; width: var(--tap); height: var(--tap); padding: 0; border: 0; background: none; cursor: pointer; }
+      .x-dots button::before { content: ""; display: block; width: 26px; height: 3px; border-radius: 2px; background: var(--stroke-primary); }
+      .x-dots button[aria-current="true"]::before { background: var(--x-red); }
+      .x-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+      .x-btn { display: inline-flex; align-items: center; gap: 8px; min-height: var(--tap); padding: 0 18px; border: 0; border-radius: var(--r-s); background: color-mix(in srgb, var(--fill-tertiary) 85%, transparent); color: var(--text-primary); font: var(--type-label); text-decoration: none; cursor: pointer; }
+      .x-btn:hover { box-shadow: inset 0 0 0 100px var(--hover-wash); }
+      .x-btn--play { background: var(--fill-primary); color: var(--text-primary-on); }
+      .x-btn--play:hover { box-shadow: inset 0 0 0 100px var(--hover-wash-primary-on); }
+      .x-btn:disabled { opacity: 0.4; cursor: default; box-shadow: none; }
+      /* rows and cards */
+      .x-shelf { display: grid; gap: 10px; min-width: 0; }
+      .x-shelf__head { display: flex; align-items: center; gap: 8px; }
+      .x-shelf__head h2 { font: var(--type-heading); margin-right: auto; }
+      .x-see { display: inline-flex; align-items: center; min-height: var(--tap); padding: 0 6px; font: var(--type-label); color: var(--text-secondary); text-decoration: none; }
+      .x-see:hover { color: var(--text-primary); }
+      .x-arr { width: 36px; height: 36px; border: 1px solid var(--stroke-primary); border-radius: var(--r-pill); background: none; color: var(--text-primary); font: var(--type-label); cursor: pointer; }
+      .x-arr:hover { box-shadow: inset 0 0 0 100px var(--hover-wash); }
+      .x-rail { display: grid; grid-auto-flow: column; grid-auto-columns: clamp(200px, 23%, 250px); gap: 12px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; margin-inline: calc(var(--gutter) * -1); padding: 0 var(--gutter) 4px; scroll-padding-inline: var(--gutter); }
+      .x-rail::-webkit-scrollbar { display: none; }
+      .x-card { display: grid; gap: 6px; align-content: start; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; scroll-snap-align: start; min-width: 0; }
+      .x-thumb { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: var(--r-s); overflow: hidden; background: var(--fill-tertiary); }
+      .x-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-quick) var(--ease-out); }
+      .x-card:hover .x-thumb img { transform: scale(1.04); }
+      .x-card:hover .x-card__t { color: var(--x-red); }
+      .x-rt { position: absolute; right: 6px; bottom: 6px; padding: 2px 6px; border-radius: 6px; background: var(--x-scrim); color: var(--text-primary); font: var(--type-caption); font-variant-numeric: tabular-nums; }
+      .x-card__t { font: var(--type-label); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .x-card__m { font: var(--type-caption); color: var(--text-secondary); }
+      .x-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px 12px; }
+      .x-empty { padding: 32px 0; color: var(--text-secondary); }
+      .x-h { font: var(--type-title); }
+      /* shows */
+      .x-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+      .x-tile { position: relative; aspect-ratio: 16 / 9; padding: 0; border: 0; border-radius: var(--r-m); overflow: hidden; background: var(--fill-tertiary); color: var(--text-primary); text-align: left; cursor: pointer; }
+      .x-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .x-tile::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, var(--fill-primary-on) 5%, transparent 80%); }
+      .x-tile:hover { box-shadow: inset 0 0 0 2px var(--x-red); }
+      .x-tile > span { position: absolute; z-index: 1; left: 14px; right: 14px; bottom: 12px; display: grid; gap: 2px; font: var(--type-body-strong); }
+      .x-tile small { font: var(--type-caption); color: var(--text-secondary); }
+      /* show page */
+      .x-banner { position: relative; min-height: 280px; display: flex; align-items: flex-end; border-radius: var(--r-l); overflow: hidden; background: var(--fill-tertiary); }
+      .x-banner > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .x-banner::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, var(--fill-primary-on) 5%, color-mix(in srgb, var(--fill-primary-on) 50%, transparent) 55%, transparent); }
+      .x-banner__copy { position: relative; z-index: 1; display: grid; gap: 8px; padding: var(--x-gap); }
+      .x-banner h1 { font: var(--type-display); }
+      .x-chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+      .x-chips::-webkit-scrollbar { display: none; }
+      .x-chip { flex: none; min-height: 36px; padding: 6px 14px; border: 1px solid var(--stroke-primary); border-radius: var(--r-pill); background: none; color: var(--text-primary); font: var(--type-tag); white-space: nowrap; cursor: pointer; }
+      .x-chip:hover { box-shadow: inset 0 0 0 100px var(--hover-wash); }
+      .x-chip[aria-pressed="true"] { background: var(--x-red); border-color: var(--x-red); color: var(--fill-primary-on); }
+      .x-eps { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+      .x-ep { display: flex; align-items: center; gap: 6px; padding-right: 8px; border-radius: var(--r-m); }
+      .x-ep:hover { background: var(--fill-tertiary); }
+      .x-ep__main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 14px; padding: 8px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+      .x-ep__n { flex: none; width: 28px; font: var(--type-label); color: var(--text-secondary); text-align: right; font-variant-numeric: tabular-nums; }
+      .x-ep .x-thumb { flex: none; width: clamp(120px, 18vw, 180px); border-radius: 10px; }
+      .x-ep__b { flex: 1; min-width: 0; display: grid; gap: 4px; }
+      .x-ep__p { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--r-pill); background: var(--fill-primary); color: var(--text-primary-on); font-size: 12px; }
+      .x-ic { flex: none; width: var(--tap); height: var(--tap); border: 1px solid var(--stroke-primary); border-radius: var(--r-pill); background: none; color: var(--text-primary); font: var(--type-label); cursor: pointer; }
+      .x-ic:hover { box-shadow: inset 0 0 0 100px var(--hover-wash); }
+      .x-search { width: 100%; min-height: 52px; padding: 0 18px; border: 1px solid var(--stroke-primary); border-radius: var(--r-m); background: var(--fill-tertiary); color: var(--text-primary); font: var(--type-body); }
+      .x-search::placeholder { color: var(--text-secondary); }
+      .x-search:focus { outline: 2px solid var(--x-red); outline-offset: 0; }
+      .x-filters { display: grid; gap: 8px; }
+      /* info sheet */
+      .x-sheet { position: fixed; inset: 0; z-index: 90; display: grid; align-items: end; justify-items: center; }
+      .x-sheet__scrim { position: absolute; inset: 0; background: color-mix(in srgb, var(--fill-primary-on) 72%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+      .x-sheet__panel { position: relative; width: min(100%, 860px); max-height: 92vh; overflow-y: auto; border: 1px solid var(--stroke-secondary); border-bottom: 0; border-radius: var(--r-l) var(--r-l) 0 0; background: var(--fill-primary-on); box-shadow: var(--hark-shadow); animation: x-up 260ms var(--ease-out); }
+      @keyframes x-up { from { transform: translateY(48px); opacity: 0; } }
+      .x-sheet__art { position: relative; aspect-ratio: 16 / 9; max-height: 48vh; overflow: hidden; }
+      .x-sheet__art img { width: 100%; height: 100%; object-fit: cover; }
+      .x-sheet__art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, var(--fill-primary-on) 3%, transparent 55%); }
+      .x-x { position: absolute; z-index: 2; top: 12px; right: 12px; width: var(--tap); height: var(--tap); border: 0; border-radius: var(--r-pill); background: var(--mat-agent); color: var(--text-primary); font: var(--type-heading); line-height: 1; cursor: pointer; }
+      .x-sheet__body { position: relative; z-index: 1; display: grid; gap: 12px; margin-top: -48px; padding: 0 var(--x-gap) calc(env(safe-area-inset-bottom, 0px) + 32px); min-width: 0; }
+      .x-sheet__body h2 { font: var(--type-title); }
+      .x-sheet__body h3 { font: var(--type-heading); margin-top: 16px; }
+      .x-sheet .x-rail { margin-inline: calc(var(--x-gap) * -1); padding-inline: var(--x-gap); scroll-padding-inline: var(--x-gap); grid-auto-columns: 200px; }
+      /* player */
+      .x-player { position: fixed; inset: 0; z-index: 100; overflow-y: auto; background: var(--fill-primary-on); display: grid; justify-items: center; align-content: start; padding: calc(env(safe-area-inset-top, 0px) + 8px) 0 calc(env(safe-area-inset-bottom, 0px) + 32px); }
+      .x-pl { width: min(100%, 1100px); display: grid; gap: 14px; min-width: 0; }
+      .x-pl__top { display: flex; align-items: center; gap: 12px; padding-inline: var(--gutter); min-width: 0; }
+      .x-pl__top > div { min-width: 0; }
+      .x-pl__top h2 { font: var(--type-body-strong); overflow-wrap: anywhere; }
+      .x-back { flex: none; width: var(--tap); height: var(--tap); border: 0; border-radius: var(--r-pill); background: var(--fill-tertiary); color: var(--text-primary); font: var(--type-heading); line-height: 1; cursor: pointer; }
+      .x-back:hover { box-shadow: inset 0 0 0 100px var(--hover-wash); }
+      .x-screen { display: flex; flex-direction: column; background: var(--fill-primary-on); }
+      .x-stage { position: relative; aspect-ratio: 16 / 9; background: var(--fill-tertiary); overflow: hidden; }
+      .x-stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+      .x-screen:fullscreen .x-stage, .x-player.is-theater .x-stage { flex: 1; aspect-ratio: auto; border-radius: 0; }
+      .x-player.is-theater .x-screen { position: fixed; inset: 0; z-index: 5; }
+      .x-pl__nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding-inline: var(--gutter); }
+      .x-pl__yt { margin-left: auto; font: var(--type-small); }
+      .x-note { padding-inline: var(--gutter); font: var(--type-small); color: var(--x-red); }
+      .x-up { display: flex; align-items: center; gap: 14px; margin-inline: var(--gutter); padding: 12px; border-radius: var(--r-m); background: var(--fill-tertiary); }
+      .x-up .x-thumb { flex: none; width: clamp(120px, 20vw, 200px); border-radius: 10px; }
+      .x-up__b { flex: 1; min-width: 0; display: grid; gap: 4px; }
+      .x-up__b .x-card__t { font: var(--type-body-strong); }
+      @media (min-width: 700px) { .x-stage { border-radius: var(--r-m); } .x-screen { margin-inline: var(--gutter); } }
+      @media (max-width: 699px) {
+        .x-nav, .x-arr { display: none; }
+        .x-tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: grid; grid-template-columns: repeat(4, 1fr); padding: 4px 4px calc(env(safe-area-inset-bottom, 0px) + 4px); background: var(--mat-agent); -webkit-backdrop-filter: var(--hark-blur); backdrop-filter: var(--hark-blur); border-top: 1px solid var(--stroke-secondary); }
+        .x-tabbar a { display: grid; justify-items: center; align-content: center; gap: 2px; min-height: 52px; font: var(--type-caption); color: var(--text-secondary); text-decoration: none; }
+        .x-tabbar svg { width: 22px; height: 22px; }
+        .x-tabbar a[aria-current="page"] { color: var(--text-primary); }
+        .x-tabbar a[aria-current="page"] svg { color: var(--x-red); }
+        .x-spacer { display: block; height: 72px; }
+        .x-rail { grid-auto-columns: 64%; }
+        .x-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+        .x-chip { min-height: var(--tap); }
+        .x-ep__n { display: none; }
+        .x-ep__main { gap: 10px; padding: 6px 0; }
+        .x-ep__p { display: none; }
+        .x-feat__copy { padding-bottom: calc(var(--x-gap) + 32px); }
+        .x-pl__yt { margin-left: 0; flex-basis: 100%; }
+        .x-pl__nav .x-btn { flex: 1; justify-content: center; }
+      }
+      @media (prefers-reduced-motion: reduce) { .x-sheet__panel { animation: none; } .x-feat__bg img, .x-thumb img { transition: none; } }
+      /* hubs: brand colors requested by the owner */
+      body[data-hub="nxt"] { --x-red: #d4af37; }
+      body[data-hub="wcw"] { --x-red: #e0313f; }
+      .x-feat [data-h="title"] { font: var(--type-display); }
+      .x-hub { position: relative; display: grid; gap: 8px; padding: clamp(20px, 4vw, 32px) var(--x-gap); border-radius: var(--r-l); overflow: hidden; color: #fff; }
+      .x-hub__mark { justify-self: start; font: var(--weight-bold) clamp(56px, 11vw, 112px)/0.9 var(--sans); letter-spacing: -0.03em; }
+      .x-hub__sub { font: var(--type-small); color: rgba(255, 255, 255, 0.75); }
+      .x-hub--nxt { background: radial-gradient(120% 140% at 0% 0%, #2a2208, #000 55%); box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.45); }
+      .x-hub--nxt .x-hub__mark { color: #d4af37; }
+      .x-hub--wcw { background: linear-gradient(135deg, #0b1e4f, #13306f); padding-bottom: calc(clamp(20px, 4vw, 32px) + 12px); }
+      .x-hub__mark { line-height: 0; }
+      .x-hub__mark img { display: block; height: clamp(56px, 11vw, 112px); width: auto; max-width: min(100%, 420px); object-fit: contain; }
+      .x-hub--wcw::after, .x-promo--wcw::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 12px; background: linear-gradient(to bottom, #c8102e 0 33%, #fff 33% 66%, #2a5bd7 66%); }
+      .x-promos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+      .x-promo { position: relative; overflow: hidden; display: flex; align-items: center; gap: 16px; min-height: 96px; padding: 16px 20px; border-radius: var(--r-m); color: #fff; text-decoration: none; }
+      .x-promo:hover { box-shadow: inset 0 0 0 2px var(--promo, #fff); }
+      .x-promo__mark { flex: none; display: block; height: 44px; width: auto; max-width: 112px; object-fit: contain; }
+      .x-promo__b { display: grid; gap: 2px; min-width: 0; }
+      .x-promo__b strong { font: var(--type-heading); }
+      .x-promo__b small { font: var(--type-caption); color: rgba(255, 255, 255, 0.75); }
+      .x-promo--nxt { --promo: #d4af37; background: #000; box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.5); }
+      .x-promo--wcw { --promo: #c8102e; background: linear-gradient(135deg, #0b1e4f, #13306f); padding-bottom: 24px; }
+      .x-promo--wcw::after { height: 8px; }
+      .x-browse { display: flex; justify-content: flex-end; margin-top: -16px; }
+      /* real logos: ECW is black art, WCW royal blue, NXT light grey */
+      .x-logo--ecw { filter: invert(1); }
+      .x-logo--wcw { filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5)); }
+      .x-tl { display: block; height: 22px; width: auto; max-width: 52px; object-fit: contain; opacity: 0.7; }
+      .x-tabbar a[aria-current="page"] .x-tl { opacity: 1; }
+      .x-tabbar a[aria-current="page"] { box-shadow: inset 0 2px 0 var(--x-red); }
+      .x-tabbar .x-logo--wcw { filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 4px rgba(255, 255, 255, 0.5)); }
+      /* ECW: black, gritty grey grain, toxic green accent, barbed wire */
+      body[data-hub="ecw"] { --x-red: #7cff3a; }
+      .x-hub--ecw, .x-promo--ecw { background-color: #050505; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"), radial-gradient(120% 140% at 100% 0%, #262626, #050505 60%); box-shadow: inset 0 0 0 1px rgba(124, 255, 58, 0.35); }
+      .x-hub--ecw { padding-bottom: calc(clamp(20px, 4vw, 32px) + 14px); }
+      .x-hub--ecw .x-hub__sub strong { color: #7cff3a; font-weight: var(--weight-medium); }
+      .x-hub--ecw::after, .x-promo--ecw::after { content: ""; position: absolute; left: 0; right: 0; bottom: 4px; height: 14px; opacity: 0.85; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='14' fill='none' stroke='%23a3a3a3' stroke-width='1.3' stroke-linecap='round'%3E%3Cpath d='M0 6.2Q9 8 18 6.2T36 6.2M0 7.8Q9 6 18 7.8T36 7.8'/%3E%3Cpath d='M13 2l10 10M13 12l10-10'/%3E%3C/svg%3E") 0 0 / 36px 14px repeat-x; }
+      .x-promo--ecw { --promo: #7cff3a; padding-bottom: 24px; }
+      .x-promo--ecw::after { bottom: 2px; }
+      .x-mine { display: none; flex: none; place-items: center; width: var(--tap); height: var(--tap); border-radius: var(--r-pill); color: var(--text-primary); text-decoration: none; }
+      .x-mine svg { width: 22px; height: 22px; }
+      .x-mine[aria-current="page"] { color: var(--x-red); }
+      @media (max-width: 699px) { .x-tabbar { grid-template-columns: repeat(5, 1fr) !important; } .x-mine { display: grid; } .x-count { margin-left: auto; } }
+      @media (max-width: 900px) { .x-promos { grid-template-columns: 1fr; } .x-promo { min-height: 80px; } }
+      /* Survivor Series poster slide: keep the poster's right half (logo, date) clear */
+      .x-feat.is-poster::after { background: linear-gradient(to right, var(--fill-primary-on) 0%, color-mix(in srgb, var(--fill-primary-on) 70%, transparent) 26%, transparent 50%); }
+      .x-feat.is-poster .x-feat__copy { max-width: 46%; }
+      .x-feat.is-poster [data-h="title"] { font: var(--type-title); font-weight: var(--weight-medium); }
+      .x-feat__bg img.x-poster { object-position: right center; }
+      @media (max-width: 699px) {
+        .x-feat.is-poster { min-height: 0; padding-top: 56.25%; }
+        .x-feat.is-poster .x-feat__bg img { bottom: auto; height: auto; aspect-ratio: 16 / 9; }
+        .x-feat.is-poster::after { background: linear-gradient(to bottom, transparent 70%, var(--fill-primary-on)); }
+        .x-feat.is-poster .x-feat__copy { max-width: none; }
+      }
+      .x-browse { gap: 4px 16px; flex-wrap: wrap; }
+      .x-nav { min-width: 0; overflow-x: auto; scrollbar-width: none; }
+      .x-nav::-webkit-scrollbar { display: none; }
+      .x-nav a { flex: none; white-space: nowrap; }
+      @media (min-width: 700px) and (max-width: 1099px) { .x-count { display: none; } .x-top { gap: 8px; } .x-nav a { padding: 0 8px; } }
+      /* playlist view */
+      .x-ssposter { position: relative; aspect-ratio: 16 / 9; border-radius: var(--r-l); overflow: hidden; background: var(--fill-tertiary); }
+      .x-ssposter img { width: 100%; height: 100%; object-fit: cover; }
+      .x-sshead { display: grid; gap: 10px; }
+      .x-sshead h1 { font: var(--type-display); }
+      .x-secnav { margin-top: 4px; }
+      .x-sec { display: grid; gap: 8px; scroll-margin-top: 80px; }
+      .x-sec .x-shelf__head h2 small { font: var(--type-label); color: var(--text-secondary); margin-left: 8px; }
+      /* all channels */
+      .x-lib-bar { display: grid; gap: 10px; }
+      .x-lib-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+      .x-lib-row .x-chips { flex-wrap: wrap; overflow: visible; }
+      .x-lt { position: absolute; left: 6px; top: 6px; padding: 2px 6px; border-radius: 6px; background: var(--x-scrim); color: var(--text-primary); font: var(--type-tag); }
+      .x-lt--live { background: var(--x-red); color: var(--fill-primary-on); }
+      .x-status { display: flex; align-items: center; gap: 10px; min-height: 24px; }
+      .x-spin { width: 14px; height: 14px; border: 2px solid var(--stroke-primary); border-top-color: var(--x-red); border-radius: 50%; animation: x-spin 0.8s linear infinite; }
+      @keyframes x-spin { to { transform: rotate(360deg); } }
+      @media (prefers-reduced-motion: reduce) { .x-spin { animation: none; } }
+      @media (max-width: 699px) { .x-tabbar { grid-template-columns: repeat(6, 1fr) !important; } }
+      /* channel hubs: square logo badges */
+      .x-chans { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px 12px; min-width: 0; }
+      .x-chan { display: grid; gap: 8px; align-content: start; min-width: 0; color: var(--text-primary); text-decoration: none; }
+      .x-chan__logo { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--r-m); background: var(--fill-tertiary); box-shadow: inset 0 0 0 1px var(--stroke-secondary); outline: 1px solid var(--stroke-secondary); outline-offset: -1px; transition: transform var(--dur-quick) var(--ease-out); }
+      .x-chan:hover .x-chan__logo { transform: scale(1.03); outline: 2px solid var(--x-red); outline-offset: 2px; }
+      .x-chan__b { display: grid; gap: 2px; min-width: 0; }
+      .x-chan__b strong { font: var(--type-label); font-weight: var(--weight-medium); overflow-wrap: anywhere; }
+      .x-chan__b small { font: var(--type-caption); color: var(--text-secondary); }
+      .x-chhead { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; min-width: 0; }
+      .x-chhead img { flex: none; width: clamp(88px, 16vw, 144px); aspect-ratio: 1; object-fit: cover; border-radius: var(--r-l); outline: 1px solid var(--stroke-secondary); outline-offset: -1px; }
+      .x-chhead__b { flex: 1 1 260px; min-width: 0; display: grid; gap: 8px; }
+      .x-chhead h1 { font: var(--type-display); overflow-wrap: anywhere; }
+      button.x-see { border: 0; background: none; cursor: pointer; }
+      .x-chan__mark { display: grid; place-items: center; padding: 20%; overflow: hidden; }
+      .x-chan__mark img { width: 100%; height: 100%; object-fit: contain; }
+      .x-chan__mark--nxt { background: radial-gradient(120% 140% at 0% 0%, #2a2208, #000 55%); }
+      .x-chan__mark--wcw { background: linear-gradient(135deg, #0b1e4f, #13306f); }
+      .x-chan__mark--ecw { background: radial-gradient(120% 140% at 100% 0%, #262626, #050505 60%); }
+      @media (max-width: 699px) { .x-chans { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 14px 10px; } }
+      /* Main Event: YouTube and Rumble sections */
+      .x-me__head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; min-width: 0; }
+      .x-me__lock { flex: none; display: inline-flex; align-items: center; gap: 12px; height: 48px; padding: 0 14px 0 4px; border-radius: var(--r-s); background: #000; box-shadow: inset 0 0 0 1px var(--stroke-secondary); }
+      .x-me__lock img { display: block; width: auto; object-fit: contain; }
+      .x-me__lock .x-me__logo { height: 44px; }
+      .x-me__lock .x-me__plat { height: 18px; max-width: 96px; }
+      .x-me__div { width: 1px; height: 22px; background: rgba(255, 255, 255, 0.4); }
+      .x-me__b { flex: 1 1 220px; min-width: 0; display: grid; gap: 2px; }
+      .x-me__b h2 { font: var(--type-heading); overflow-wrap: anywhere; }
+      .x-me__b p { font: var(--type-caption); color: var(--text-secondary); }
+      .x-me__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+      a.x-card { text-decoration: none; }
+      .x-thumb.x-me__art { display: grid; place-items: center; background: #000; box-shadow: inset 0 0 0 1px var(--stroke-secondary); }
+      .x-thumb.x-me__art img { width: 64%; height: 64%; object-fit: contain; }
+      .x-me__cta { font: var(--type-label); color: var(--text-primary); text-decoration: underline; text-underline-offset: 3px; }
+      .x-card:hover .x-me__cta { color: var(--x-red); }
+      .x-me-view .x-grid { min-width: 0; }
+      @media (max-width: 699px) { .x-me__lock { height: 44px; } .x-me__lock .x-me__logo { height: 40px; } .x-me__lock .x-me__plat { height: 16px; } }
+    </style>
+  </head>
+  <body>
+    <div class="page" id="top">
+      <header class="x-top">
+        <a class="x-logo x-wm" href="#home" aria-label="WWE Unlimited home"><img class="x-wm__img" src="wwe.png" alt="WWE" />Unlimited</a>
+        <nav class="x-nav" aria-label="Main">
+          <a href="#home" data-tab="home">Home</a>
+          <a href="#nxt" data-tab="nxt">NXT</a>
+          <a href="#wcw" data-tab="wcw">WCW</a>
+          <a href="#ecw" data-tab="ecw">ECW</a>
+          <a href="#shows" data-tab="shows">Shows</a>
+          <a href="#search" data-tab="search">Search</a>
+          <a href="#all" data-tab="all">All Channels</a>
+          <a href="#list" data-tab="list">My List</a>
+        </nav>
+        <p class="x-count"><span class="x-total">All</span> titles · checked Nov 13, 2026</p>
+        <a class="x-mine" href="#list" data-tab="list" aria-label="My List"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 3.5h12v17l-6-4.2-6 4.2z" /></svg></a>
+      </header>
+      <main class="main">
+        <div class="x-view" id="v-home">
+          <section class="x-feat" data-hero="home" aria-roledescription="carousel" aria-label="Featured events">
+            <div class="x-feat__bg" data-h="bg"><img class="x-poster" id="ss-poster" src="survivor_series_2026_poster.jpg" alt="Survivor Series: WarGames, Houston, Saturday November 28: Roman Reigns behind the cage" /></div>
+            <div class="x-feat__copy">
+              <p class="x-tag" data-h="tag">Featured</p>
+              <h1 data-h="title"><span class="x-wm"><img class="x-wm__img" src="wwe.png" alt="WWE" />Unlimited</span></h1>
+              <p class="x-sub" data-h="sub">Full events and episodes, free and official on WWE's YouTube channels.</p>
+              <p class="x-meta" data-h="meta"></p>
+              <div class="x-acts">
+                <button type="button" class="x-btn x-btn--play" data-h="play">&#9654; Play</button>
+                <button type="button" class="x-btn" data-h="info">&#9432; More Info</button>
+                <button type="button" class="x-btn" data-h="list">+ My List</button>
+              </div>
+            </div>
+            <div class="x-dots" data-h="dots" role="group" aria-label="Choose featured event"></div>
+          </section>
+          <div class="x-promos">
+            <a class="x-promo x-promo--nxt" href="#nxt"><img class="x-promo__mark" src="nxt.png" alt="NXT" /><span class="x-promo__b"><strong>NXT Hub &rsaquo;</strong><small><span data-hubcount="NXT"></span> titles · TakeOvers, episodes, matches</small></span></a>
+            <a class="x-promo x-promo--wcw" href="#wcw"><img class="x-promo__mark x-logo--wcw" src="wcw.png" alt="WCW" /><span class="x-promo__b"><strong>WCW Hub &rsaquo;</strong><small><span data-hubcount="WCW"></span> titles · PPVs, Nitro, Thunder, Clash</small></span></a>
+            <a class="x-promo x-promo--ecw" href="#ecw"><img class="x-promo__mark x-logo--ecw" src="ecw.png" alt="ECW" /><span class="x-promo__b"><strong>ECW Hub &rsaquo;</strong><small><span data-hubcount="ECW"></span> titles · episodes, matches, extreme moments</small></span></a>
+          </div>
+          <p class="x-browse"><a class="x-see" href="#all">All Channels · <span data-libtotal>125,639</span> videos &rsaquo;</a><a class="x-see" href="#shows">Browse all shows &rsaquo;</a></p>
+          <div id="home-rows" class="x-view"></div>
+          <section class="x-shelf" aria-labelledby="chans-h">
+            <div class="x-shelf__head"><h2 id="chans-h">Channel hubs</h2></div>
+            <div class="x-chans">
+              <a class="x-chan" href="#nxt"><span class="x-chan__logo x-chan__mark x-chan__mark--nxt"><img src="nxt.png" alt="NXT logo" /></span><span class="x-chan__b"><strong>NXT</strong><small><span data-hubcount="NXT"></span> titles</small></span></a>
+              <a class="x-chan" href="#wcw"><span class="x-chan__logo x-chan__mark x-chan__mark--wcw"><img class="x-logo--wcw" src="wcw.png" alt="WCW logo" /></span><span class="x-chan__b"><strong>WCW</strong><small><span data-hubcount="WCW"></span> titles</small></span></a>
+              <a class="x-chan" href="#ecw"><span class="x-chan__logo x-chan__mark x-chan__mark--ecw"><img class="x-logo--ecw" src="ecw.png" alt="ECW logo" /></span><span class="x-chan__b"><strong>ECW</strong><small><span data-hubcount="ECW"></span> titles</small></span></a>
+              <a class="x-chan" href="#ch/WWEVault"><img class="x-chan__logo" data-chlogo="WWEVault" src="WWEVault.jpg" alt="WWE Vault logo" /><span class="x-chan__b"><strong>WWE Vault</strong><small><span data-chcount="WWEVault">3,488</span> uploads</small></span></a>
+              <a class="x-chan" href="#ch/luchalibreaaatv"><img class="x-chan__logo" data-chlogo="luchalibreaaatv" src="luchalibreaaatv.jpg" alt="Lucha Libre AAA logo" /><span class="x-chan__b"><strong>Lucha Libre AAA</strong><small><span data-chcount="luchalibreaaatv">6,184</span> uploads</small></span></a>
+              <a class="x-chan" href="#ch/WWEEspanol"><img class="x-chan__logo" data-chlogo="WWEEspanol" src="WWEEspanol.jpg" alt="WWE Español logo" /><span class="x-chan__b"><strong>WWE Español</strong><small><span data-chcount="WWEEspanol">4,724</span> uploads</small></span></a>
+              <a class="x-chan" href="#ch/WWEArabic"><img class="x-chan__logo" data-chlogo="WWEArabic" src="WWEArabic.jpg" alt="WWE Arabic logo" /><span class="x-chan__b"><strong>WWE Arabic</strong><small><span data-chcount="WWEArabic">4,560</span> uploads</small></span></a>
+              <a class="x-chan" href="#ch/WWEDeutschland"><img class="x-chan__logo" data-chlogo="WWEDeutschland" src="WWEDeutschland.jpg" alt="WWE Deutschland logo" /><span class="x-chan__b"><strong>WWE Deutschland</strong><small><span data-chcount="WWEDeutschland">5,484</span> uploads</small></span></a>
+              <a class="x-chan" href="#ch/WWEFansNationEurope"><img class="x-chan__logo" data-chlogo="WWEFansNationEurope" src="WWEFansNationEurope.jpg" alt="WWE Europe logo" /><span class="x-chan__b"><strong>WWE Europe</strong><small><span data-chcount="WWEFansNationEurope">256</span> uploads</small></span></a>
+              <a class="x-chan" href="#ch/UpUpDownDown"><img class="x-chan__logo" data-chlogo="UpUpDownDown" src="UpUpDownDown.jpg" alt="UpUpDownDown logo" /><span class="x-chan__b"><strong>UpUpDownDown</strong><small><span data-chcount="UpUpDownDown">3,897</span> uploads</small></span></a>
+              <a class="x-chan" href="#ch/WWEMusic"><img class="x-chan__logo" data-chlogo="WWEMusic" src="WWEMusic.jpg" alt="WWE Music logo" /><span class="x-chan__b"><strong>WWE Music</strong><small><span data-chcount="WWEMusic">381</span> uploads</small></span></a>
+            </div>
+          </section>
+        </div>
+
+        <div class="x-view" id="v-nxt" hidden>
+          <header class="x-hub x-hub--nxt">
+            <h1 class="x-hub__mark"><img src="nxt.png" alt="NXT" /></h1>
+            <p class="x-hub__sub"><span data-hubcount="NXT"></span> titles · TakeOvers, weekly episodes, full matches and more</p>
+          </header>
+          <section class="x-feat" data-hero="nxt" aria-roledescription="carousel" aria-label="Featured NXT events">
+            <div class="x-feat__bg" data-h="bg"></div>
+            <div class="x-feat__copy">
+              <p class="x-tag" data-h="tag">Featured</p>
+              <h2 data-h="title"></h2>
+              <p class="x-sub" data-h="sub"></p>
+              <p class="x-meta" data-h="meta"></p>
+              <div class="x-acts">
+                <button type="button" class="x-btn x-btn--play" data-h="play">&#9654; Play</button>
+                <button type="button" class="x-btn" data-h="info">&#9432; More Info</button>
+                <button type="button" class="x-btn" data-h="list">+ My List</button>
+              </div>
+            </div>
+            <div class="x-dots" data-h="dots" role="group" aria-label="Choose featured NXT event"></div>
+          </section>
+          <div class="x-view" id="nxt-rows"></div>
+        </div>
+
+        <div class="x-view" id="v-wcw" hidden>
+          <header class="x-hub x-hub--wcw">
+            <h1 class="x-hub__mark"><img class="x-logo--wcw" src="wcw.png" alt="WCW" /></h1>
+            <p class="x-hub__sub"><span data-hubcount="WCW"></span> titles · PPVs, Monday Nitro, Thunder, Clash of the Champions and more</p>
+          </header>
+          <section class="x-feat" data-hero="wcw" aria-roledescription="carousel" aria-label="Featured WCW pay-per-views">
+            <div class="x-feat__bg" data-h="bg"></div>
+            <div class="x-feat__copy">
+              <p class="x-tag" data-h="tag">Featured</p>
+              <h2 data-h="title"></h2>
+              <p class="x-sub" data-h="sub"></p>
+              <p class="x-meta" data-h="meta"></p>
+              <div class="x-acts">
+                <button type="button" class="x-btn x-btn--play" data-h="play">&#9654; Play</button>
+                <button type="button" class="x-btn" data-h="info">&#9432; More Info</button>
+                <button type="button" class="x-btn" data-h="list">+ My List</button>
+              </div>
+            </div>
+            <div class="x-dots" data-h="dots" role="group" aria-label="Choose featured WCW pay-per-view"></div>
+          </section>
+          <div class="x-view" id="wcw-rows"></div>
+        </div>
+
+        <div class="x-view" id="v-ecw" hidden>
+          <header class="x-hub x-hub--ecw">
+            <h1 class="x-hub__mark"><img class="x-logo--ecw" src="ecw.png" alt="ECW" /></h1>
+            <p class="x-hub__sub"><span data-hubcount="ECW"></span> titles · <strong>Extreme Championship Wrestling</strong>: full episodes, matches and the moments that crossed the line</p>
+          </header>
+          <section class="x-feat" data-hero="ecw" aria-roledescription="carousel" aria-label="Featured ECW episodes">
+            <div class="x-feat__bg" data-h="bg"></div>
+            <div class="x-feat__copy">
+              <p class="x-tag" data-h="tag">Featured</p>
+              <h2 data-h="title"></h2>
+              <p class="x-sub" data-h="sub"></p>
+              <p class="x-meta" data-h="meta"></p>
+              <div class="x-acts">
+                <button type="button" class="x-btn x-btn--play" data-h="play">&#9654; Play</button>
+                <button type="button" class="x-btn" data-h="info">&#9432; More Info</button>
+                <button type="button" class="x-btn" data-h="list">+ My List</button>
+              </div>
+            </div>
+            <div class="x-dots" data-h="dots" role="group" aria-label="Choose featured ECW episode"></div>
+          </section>
+          <div class="x-view" id="ecw-rows"></div>
+        </div>
+
+        <div class="x-view" id="v-shows" hidden>
+          <div class="head">
+            <p class="head__eyebrow">WWE Vault · WWE · WCW channels</p>
+            <h2>Every show on WWE Unlimited</h2>
+            <p class="head__sub"><span class="x-total">All</span> full events, episodes, matches and extras, free and official on WWE's YouTube channels.</p>
+          </div>
+          <div class="x-tiles" id="tiles"></div>
+          <section class="section" id="rest">
+            <div class="head">
+              <h2>Where the rest lives</h2>
+              <p class="head__sub">Most modern Raw, SmackDown, NXT and PLE episodes aren't posted free.</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <caption>In the US</caption>
+                <thead>
+                  <tr><th scope="col">Show</th><th scope="col">Where</th></tr>
+                </thead>
+                <tbody>
+                  <tr><th scope="row">Past Raw episodes <small>and PLEs before Sept 2025</small></th><td>Netflix <small>WWE library since Jan 6, 2026</small></td></tr>
+                  <tr><th scope="row">Current PLEs</th><td>ESPN App <small>with ESPN Unlimited</small></td></tr>
+                  <tr><th scope="row">SmackDown</th><td>USA Network</td></tr>
+                  <tr><th scope="row">NXT</th><td>The CW</td></tr>
+                  <tr class="is-highlight"><th scope="row">Main Event <span class="dot">Free</span></th><td>New episodes stream free on WWE's YouTube</td></tr>
+                  <tr><th scope="row">Saturday Night's Main Event</th><td>Peacock</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="links">
+              <a class="btn" href="https://www.netflix.com/WWE" target="_blank" rel="noopener">Netflix WWE</a>
+              <a class="btn" href="https://www.wwe.com/article/how-to-watch" target="_blank" rel="noopener">WWE where to watch</a>
+              <a class="btn" href="https://www.youtube.com/@WWEVault" target="_blank" rel="noopener">WWE Vault channel</a>
+            </div>
+          </section>
+        </div>
+
+        <div class="x-view" id="v-show" hidden>
+          <section class="x-banner">
+            <img src="image-cadd7d21.png" alt="" />
+            <div class="x-banner__copy">
+              <a class="x-see" id="sh-back" href="#shows" style="padding: 0; justify-self: start">&larr; All shows</a>
+              <h1 id="sh-title"></h1>
+              <p class="x-meta" id="sh-meta"></p>
+              <div class="x-acts"><button type="button" class="x-btn x-btn--play" id="sh-play">&#9654; Play first episode</button></div>
+            </div>
+          </section>
+          <div class="x-chips" id="sh-years" role="group" aria-label="Filter by year"></div>
+          <ol class="x-eps" id="sh-eps"></ol>
+          <div class="links"><button type="button" class="x-btn" id="sh-more" hidden>Show more</button></div>
+        </div>
+
+        <div hidden aria-hidden="true">
+          <img id="me-src-logo" src="mainevent.png" alt="" />
+          <img id="me-src-yt" src="youtube_white.png" alt="" />
+          <img id="me-src-ru" src="rumble_white.png" alt="" />
+        </div>
+
+        <div class="x-view x-me-view" id="v-mainevent" hidden>
+          <a class="x-see" href="#shows" style="padding: 0; justify-self: start">&larr; All shows</a>
+          <div class="x-view" id="me-page"></div>
+        </div>
+
+        <div class="x-view" id="v-search" hidden>
+          <input class="x-search" id="q" type="search" placeholder="Search titles, wrestlers, events" aria-label="Search all titles" autocomplete="off" />
+          <div class="x-filters">
+            <div class="x-chips" id="f-hub" role="group" aria-label="Filter by hub"></div>
+            <div class="x-chips" id="f-cat" role="group" aria-label="Filter by category"></div>
+            <div class="x-chips" id="f-show" role="group" aria-label="Filter by show"></div>
+            <div class="x-chips" id="f-dec" role="group" aria-label="Filter by decade"></div>
+          </div>
+          <p class="fineprint" id="s-count" aria-live="polite"></p>
+          <div class="x-grid" id="s-res"></div>
+          <div class="links"><button type="button" class="x-btn" id="s-more" hidden>Show more</button></div>
+        </div>
+
+        <div class="x-view" id="v-ss" hidden>
+          <a class="x-see" href="#home" style="padding: 0; justify-self: start">&larr; Home</a>
+          <figure class="x-ssposter" id="ss-head"></figure>
+          <div class="x-sshead">
+            <p class="x-tag">Curated playlist</p>
+            <h1>Road to Survivor Series: WarGames</h1>
+            <p class="x-meta"><span>393 videos · 1987 to 2026</span><span class="pill">Sat Nov 28 · 6 PM ET · Houston</span></p>
+            <p class="x-sub">Card so far: The Bloodline vs. The 946 (Men's WarGames) · Women's WarGames · Liv Morgan (c) vs. Becky Lynch · Team USA vs. Team Mexico. Streams on ESPN Unlimited in the US, Netflix internationally.</p>
+            <div class="x-acts"><button type="button" class="x-btn x-btn--play" data-ssplay="0">&#9654; Play all</button></div>
+            <div class="x-chips x-secnav" id="ss-nav" role="group" aria-label="Jump to section"></div>
+          </div>
+          <div class="x-view" id="ss-secs"></div>
+        </div>
+
+        <div class="x-view" id="v-all" hidden>
+          <div class="head">
+            <p class="head__eyebrow">Every upload · 11 official YouTube channels</p>
+            <h2>All Channels</h2>
+            <p class="head__sub"><span data-libtotal>125,639</span> videos, newest first. Tap any one to play it here.</p>
+          </div>
+          <div class="x-lib-bar">
+            <div class="x-chips" id="lib-ch" role="group" aria-label="Channel"></div>
+            <input class="x-search" id="lib-q" type="search" placeholder="Search titles" aria-label="Search titles in this channel" autocomplete="off" />
+            <div class="x-lib-row">
+              <div class="x-chips" id="lib-type" role="group" aria-label="Type"></div>
+              <div class="x-chips" id="lib-sort" role="group" aria-label="Sort"></div>
+            </div>
+            <p class="fineprint x-status" id="lib-status" aria-live="polite"></p>
+          </div>
+          <div class="x-grid" id="lib-res"></div>
+          <div class="links"><button type="button" class="x-btn" id="lib-more" hidden>Load more</button></div>
+          <p class="fineprint" id="lib-note" hidden>Newest sorts within each channel; across all channels, results run channel by channel.</p>
+        </div>
+
+        <div class="x-view" id="v-ch" hidden>
+          <a class="x-see" href="#home" style="padding: 0; justify-self: start">&larr; Home</a>
+          <header class="x-chhead">
+            <span id="ch-logo" style="display: contents"></span>
+            <div class="x-chhead__b">
+              <p class="x-tag">Channel hub</p>
+              <h1 id="ch-name"></h1>
+              <p class="x-meta" id="ch-meta"></p>
+              <div class="x-acts"><a class="x-btn" id="ch-yt" href="https://www.youtube.com/" target="_blank" rel="noopener">Open on YouTube &#8599;</a></div>
+            </div>
+          </header>
+          <p class="fineprint x-status" id="ch-status" aria-live="polite"></p>
+          <div class="x-view" id="ch-rows"></div>
+        </div>
+
+        <div class="x-view" id="v-list" hidden>
+          <h2 class="x-h">My List</h2>
+          <div class="x-grid" id="l-res"></div>
+          <p class="x-empty" id="l-empty">Nothing saved yet. Tap + My List on any event and it lands here for this visit.</p>
+        </div>
+      </main>
+      <footer class="foot">
+        <p class="x-wm x-foot-wm"><img class="x-wm__img" src="wwe.png" alt="WWE" />Unlimited</p>
+        <p>Made for Chase. Every video is official and free on YouTube.</p>
+        <p>Lists every upload on WWE, WWE Vault, WWE NXT, WCW, WWE Español, WWE Arabic, WWE Deutschland, WWE Europe, Lucha Libre AAA, UpUpDownDown and WWE Music YouTube channels as of Nov 13, 2026. Videos play from YouTube; some may be region- or age-restricted.</p>
+        <a class="badge" href="https://hark.com/" target="_blank" rel="noopener"
+          ><span class="hark-mark"></span><span>built by hark</span></a
+        >
+      </footer>
+      <div class="x-spacer"></div>
+    </div>
+
+    <nav class="x-tabbar" aria-label="Main">
+      <a href="#home" data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 11 12 4l9 7v9h-6v-6H9v6H3z" /></svg>Home</a>
+      <a href="#nxt" data-tab="nxt" aria-label="NXT Hub"><img class="x-tl" src="nxt.png" alt="" />NXT</a>
+      <a href="#wcw" data-tab="wcw" aria-label="WCW Hub"><img class="x-tl x-logo--wcw" src="wcw.png" alt="" />WCW</a>
+      <a href="#ecw" data-tab="ecw" aria-label="ECW Hub"><img class="x-tl x-logo--ecw" src="ecw.png" alt="" />ECW</a>
+      <a href="#search" data-tab="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="m20 20-4.2-4.2" /></svg>Search</a>
+      <a href="#all" data-tab="all" aria-label="All Channels"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="13" rx="2.5" /><path d="m10 9 5 2.5-5 2.5z" /></svg>Channels</a>
+    </nav>
+
+    <div class="x-sheet" id="info" hidden>
+      <div class="x-sheet__scrim" data-close="info"></div>
+      <div class="x-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="in-title">
+        <div class="x-sheet__art">
+          <span id="in-art" style="display: contents"></span>
+          <button type="button" class="x-x" data-close="info" aria-label="Close">&times;</button>
+        </div>
+        <div class="x-sheet__body">
+          <p class="x-tag" id="in-show"></p>
+          <h2 id="in-title"></h2>
+          <p class="x-meta" id="in-meta"></p>
+          <div class="x-acts">
+            <button type="button" class="x-btn x-btn--play" id="in-play">&#9654; Play</button>
+            <button type="button" class="x-btn" id="in-list">+ My List</button>
+            <button type="button" class="x-btn" id="in-showpage">Go to show</button>
+          </div>
+          <h3>More from this show</h3>
+          <div class="x-rail" id="in-more"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="x-player" id="player" role="dialog" aria-modal="true" aria-labelledby="pl-title" hidden>
+      <div class="x-pl">
+        <div class="x-pl__top">
+          <button type="button" class="x-back" id="pl-back" aria-label="Back">&larr;</button>
+          <div><p class="x-tag" id="pl-show"></p><h2 id="pl-title"></h2></div>
+        </div>
+        <div class="x-screen" id="pl-screen">
+          <div class="x-stage">
+            <iframe id="pl-frame" src="about:blank" title="WWE video player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          </div>
+        </div>
+        <p class="x-note" id="pl-note" role="status" hidden></p>
+        <div class="x-pl__nav">
+          <button type="button" class="x-btn" id="pl-prev">&larr; Previous Episode</button>
+          <button type="button" class="x-btn" id="pl-next">Next Episode &rarr;</button>
+          <a class="link x-pl__yt" id="pl-yt" href="https://www.youtube.com/@WWEVault" target="_blank" rel="noopener">Having trouble? Watch on YouTube &#8599;</a>
+        </div>
+        <div class="x-up" id="pl-up"></div>
+      </div>
+    </div>
+
+    <script type="application/json" id="catalog" src="wwe_catalog.json"></script>
+    <script type="application/json" id="ss-data" src="ss_playlist.json"></script>
+    <script type="application/json" id="lib-manifest" src="lib_manifest.json"></script>
+    <script type="application/json" id="me-data" src="main_event.json"></script>
+    <!-- Channel libraries: kept as unparsed text until a channel is opened, then parsed part by part -->
+    <script type="application/json" id="d-lib_WWE_1" src="lib_WWE_1.json"></script>
+    <script type="application/json" id="d-lib_WWE_2" src="lib_WWE_2.json"></script>
+    <script type="application/json" id="d-lib_WWE_3" src="lib_WWE_3.json"></script>
+    <script type="application/json" id="d-lib_WWE_4" src="lib_WWE_4.json"></script>
+    <script type="application/json" id="d-lib_WWE_5" src="lib_WWE_5.json"></script>
+    <script type="application/json" id="d-lib_WWE_6" src="lib_WWE_6.json"></script>
+    <script type="application/json" id="d-lib_WWE_7" src="lib_WWE_7.json"></script>
+    <script type="application/json" id="d-lib_WWE_8" src="lib_WWE_8.json"></script>
+    <script type="application/json" id="d-lib_WWE_9" src="lib_WWE_9.json"></script>
+    <script type="application/json" id="d-lib_WWE_10" src="lib_WWE_10.json"></script>
+    <script type="application/json" id="d-lib_WWEVault" src="lib_WWEVault.json"></script>
+    <script type="application/json" id="d-lib_WWENXT" src="lib_WWENXT.json"></script>
+    <script type="application/json" id="d-lib_WCW" src="lib_WCW.json"></script>
+    <script type="application/json" id="d-lib_WWEEspanol" src="lib_WWEEspanol.json"></script>
+    <script type="application/json" id="d-lib_WWEArabic" src="lib_WWEArabic.json"></script>
+    <script type="application/json" id="d-lib_WWEDeutschland" src="lib_WWEDeutschland.json"></script>
+    <script type="application/json" id="d-lib_WWEFansNationEurope" src="lib_WWEFansNationEurope.json"></script>
+    <script type="application/json" id="d-lib_luchalibreaaatv" src="lib_luchalibreaaatv.json"></script>
+    <script type="application/json" id="d-lib_UpUpDownDown" src="lib_UpUpDownDown.json"></script>
+    <script type="application/json" id="d-lib_WWEMusic" src="lib_WWEMusic.json"></script>
+    <script src="hark.js"></script>
+    <script>
+      (function () {
+        var SHOWS = ["WWE PPVs, PLEs & Events", "Saturday Night's Main Event", "Raw", "SmackDown", "WWE Superstars", "Prime Time Wrestling", "Shotgun Saturday Night", "NXT", "ECW", "WWE Main Event", "WCW PPVs & Events", "WCW Clash of the Champions", "WCW Monday Nitro", "WCW Thunder", "WCW TV", "Territories (Mid-South, UWF, AWA, Georgia)", "Lucha Libre AAA"];
+        var FEATURED = [/^WrestleMania III \|/, /^WrestleMania 41 Sunday/, /Bash at the Beach 1994/, /^WrestleMania XXIV/, /^WCW Starrcade 1993/];
+        var $ = function (id) { return document.getElementById(id); };
+        var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var items = JSON.parse($("catalog").textContent);
+        // Main Event: the 40 YouTube episodes move under their own label; the old generic shelf goes away
+        var ME_OLD = "WWE Main Event", ME_YT = "WWE Main Event on YouTube";
+        var MEJ = JSON.parse($("me-data").textContent), meIds = {};
+        MEJ.youtube.forEach(function (x) { meIds[x.id] = 1; });
+        items.forEach(function (it) { var m = /[?&]v=([\w-]+)/.exec(it.url); if (it.show === ME_OLD && m && meIds[m[1]]) it.show = ME_YT; });
+        SHOWS = SHOWS.map(function (s) { return s === ME_OLD ? ME_YT : s; });
+        var MEQ = { name: ME_YT, len: function () { return MEL.length; }, make: function (j) { return MEL[j]; } };
+        var MEL = MEJ.youtube.slice().reverse().map(function (x, k) {
+          return { _id: x.id, title: x.title, url: x.url, show: ME_YT, hours: x.mins ? x.mins / 60 : null, _th: "https://i.ytimg.com/vi/" + x.id + "/mqdefault.jpg", _m: x.mins ? x.mins + " min" : "", _mins: x.mins, _Q: MEQ, _k: k };
+        });
+        var MER = MEJ.rumble.slice().sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
+        var byShow = {};
+        items.forEach(function (it, i) {
+          it._i = i;
+          if (SHOWS.indexOf(it.show) < 0) SHOWS.push(it.show);
+          (byShow[it.show] = byShow[it.show] || []).push(it);
+        });
+        SHOWS = SHOWS.filter(function (s) { return byShow[s] && byShow[s].length; });
+        SHOWS.forEach(function (s) {
+          byShow[s].sort(function (a, b) { return (a.year == null ? 9999 : a.year) - (b.year == null ? 9999 : b.year) || a._i - b._i; });
+        });
+        [].forEach.call(document.querySelectorAll(".x-total"), function (e) { e.textContent = items.length.toLocaleString("en-US"); });
+        $("q").placeholder = "Search " + items.length.toLocaleString("en-US") + " titles, wrestlers, events";
+
+        function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+        function pad(n) { return (n < 10 ? "0" : "") + n; }
+        function hms(s) { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 3600) + ":" + pad(Math.floor((s % 3600) / 60)) + ":" + pad(s % 60); }
+        function rt(it) { return it.hours == null ? "" : hms(it.hours * 3600); }
+        function yr(it) { return it.year == null ? "Year not listed" : it.year; }
+        function vid(it) { if (it._id) return it._id; var m = /[?&]v=([\w-]+)/.exec(it.url) || /youtu\.be\/([\w-]+)/.exec(it.url); return m ? m[1] : ""; }
+        function thumb(it) { if (it._th) return it._th; return "https://i.ytimg.com/vi/" + vid(it) + "/hqdefault.jpg"; }
+        function split(t) { var m = /^(.*?)\s+(?:\||–|-)\s+(.*)$/.exec(t); return m ? [m[1], m[2]] : [t, ""]; }
+        function years(list) { var y = list.filter(function (i) { return i.year != null; }).map(function (i) { return i.year; }); return y.length ? (Math.min.apply(0, y) === Math.max.apply(0, y) ? "" + y[0] : Math.min.apply(0, y) + "–" + Math.max.apply(0, y)) : ""; }
+        function eps(n) { return n + (n === 1 ? " episode" : " episodes"); }
+        function badge(it) { return it.hours != null ? '<span class="x-rt">' + rt(it) + "</span>" : ""; }
+        function card(it, sub) {
+          return '<button type="button" class="x-card" data-info="' + it._i + '"><span class="x-thumb"><img loading="lazy" src="' + thumb(it) + '" alt="" />' + badge(it) +
+            '</span><span class="x-card__t">' + esc(it.title) + '</span><span class="x-card__m">' + esc(sub || it.show + " · " + yr(it)) + "</span></button>";
+        }
+
+        // My List (in memory)
+        var mine = [];
+        function inList(it) { return mine.indexOf(it._i) > -1; }
+        function toggleList(it) {
+          var k = mine.indexOf(it._i);
+          if (k > -1) mine.splice(k, 1); else mine.unshift(it._i);
+          syncList();
+          if (view === "list") renderList();
+          if (view === "home") renderHomeList();
+        }
+        function syncList() {
+          [].forEach.call(document.querySelectorAll("[data-mylist]"), function (b) {
+            var on = mine.indexOf(+b.dataset.mylist) > -1;
+            if (b.classList.contains("x-ic")) { b.textContent = on ? "\u2713" : "+"; b.setAttribute("aria-label", on ? "Remove from My List" : "Add to My List"); }
+            else b.textContent = on ? "\u2713 In My List" : "+ My List";
+            b.setAttribute("aria-pressed", on ? "true" : "false");
+          });
+        }
+
+        // Featured hero
+        var view = "home";
+        var heroes = {};
+        function pick(res, pool, fill) {
+          var f = res.map(function (r) { return pool.filter(function (it) { return r.test(it.title); })[0]; }).filter(Boolean);
+          return f.concat(fill.filter(function (it) { return f.indexOf(it) < 0; })).slice(0, 5);
+        }
+        function Hero(key, feat, tagFn) {
+          var el = document.querySelector('[data-hero="' + key + '"]'), h = { i: 0, t: null };
+          var q = function (n) { return el.querySelector('[data-h="' + n + '"]'); };
+          if (!feat.length) { el.hidden = true; return; }
+          // Special slides come first; their images sit in the markup already
+          q("bg").insertAdjacentHTML("beforeend", feat.filter(function (it) { return !it.special; }).map(function (it, i) { return '<img src="' + thumb(it) + '" alt=""' + (i ? ' loading="lazy"' : "") + " />"; }).join(""));
+          q("dots").innerHTML = feat.map(function (it, i) { return '<button type="button" data-feat="' + i + '" aria-label="' + esc(it.special ? it.title : split(it.title)[0]) + '"></button>'; }).join("");
+          h.show = function (i) {
+            h.i = (i + feat.length) % feat.length;
+            var it = feat[h.i], t = split(it.title);
+            [].forEach.call(q("bg").children, function (im, k) { im.classList.toggle("is-on", k === h.i); });
+            [].forEach.call(q("dots").children, function (b, k) { b.setAttribute("aria-current", k === h.i ? "true" : "false"); });
+            el.classList.toggle("is-poster", !!it.special);
+            var pb = q("play"), ib = q("info"), lb = q("list");
+            if (it.special) {
+              q("tag").textContent = it.tag;
+              q("title").textContent = it.title;
+              q("sub").textContent = it.sub;
+              q("meta").innerHTML = '<span class="pill">' + esc(it.badge) + "</span>";
+              delete pb.dataset.play; pb.dataset.ssplay = "0"; pb.innerHTML = "&#9654; Play all";
+              delete ib.dataset.info; ib.dataset.go = it.go; ib.textContent = "View playlist";
+              delete lb.dataset.mylist; lb.hidden = true;
+              return;
+            }
+            delete pb.dataset.ssplay; pb.innerHTML = "&#9654; Play";
+            delete ib.dataset.go; ib.innerHTML = "&#9432; More Info";
+            lb.hidden = false;
+            q("tag").textContent = "Featured " + (h.i + 1) + " of " + feat.length + " · " + tagFn(it);
+            q("title").textContent = t[0];
+            q("sub").textContent = t[1] || "Full event, free and official on WWE's YouTube channels.";
+            q("meta").innerHTML = esc(yr(it)) + (it.hours != null ? ' <span class="pill">' + rt(it) + "</span>" : "");
+            q("play").dataset.play = it._i;
+            q("info").dataset.info = it._i;
+            q("list").dataset.mylist = it._i;
+            syncList();
+          };
+          h.start = function () { clearInterval(h.t); if (!reduce) h.t = setInterval(function () { if (view === key && $("info").hidden && $("player").hidden) h.show(h.i + 1); }, 7000); };
+          el.addEventListener("mouseenter", function () { clearInterval(h.t); });
+          el.addEventListener("mouseleave", h.start);
+          heroes[key] = h;
+          h.show(0); h.start();
+        }
+        function sortY(a, b) { return (a.year == null ? 9999 : a.year) - (b.year == null ? 9999 : b.year) || a._i - b._i; }
+        function yKey(it) { return it.year == null ? "none" : "" + it.year; }
+        function where(f) { return items.filter(f).sort(sortY); }
+        function isCat(it, cs) { return cs.indexOf(it.category) > -1; }
+        var EPEV = ["Full Episodes", "Full Events"];
+        var SS_SLIDE = { special: true, tag: "Curated playlist", title: "Road to Survivor Series: WarGames", sub: "393 videos · 1987 to 2026", badge: "Sat Nov 28 · 6 PM ET · Houston", go: "ss" };
+        Hero("home", [SS_SLIDE].concat(pick(FEATURED, items, byShow[SHOWS[0]])), function (it) { return it.show; });
+        var nxtEvents = where(function (it) { return it.hub === "NXT" && it.category === "Full Events"; });
+        Hero("nxt", pick([/^NXT TakeOver: Brooklyn –/, /^NXT TakeOver: Respect/, /^NXT TakeOver: New York/, /^NXT TakeOver: WarGames 2017/, /^NXT TakeOver: Stand & Deliver 2021 – Night 2/], nxtEvents, nxtEvents.filter(function (it) { return /TakeOver/.test(it.title); }).concat(nxtEvents)), function () { return "NXT Full Event"; });
+        var wcwPPV = where(function (it) { return it.hub === "WCW" && it.category === "Full Events" && it.show !== "WCW Clash of the Champions"; });
+        Hero("wcw", pick([/^WCW Starrcade 1984/, /^WCW Great American Bash 1989/, /^WCW SuperBrawl II /, /^WCW Halloween Havoc 1994/, /^WCW Fall Brawl 1998/], wcwPPV, wcwPPV.filter(function (it) { return it.show === "WCW PPVs & Events"; })), function () { return "WCW Pay-Per-View"; });
+        var ecwEpEv = where(function (it) { return it.hub === "ECW" && isCat(it, EPEV); });
+        var ecwMatches = where(function (it) { return it.hub === "ECW" && it.category === "Full Matches"; });
+        Hero("ecw", pick([/November to Remember/, /Feb\. 16, 2010/], ecwEpEv, ecwEpEv.concat(ecwMatches)), function (it) { return "ECW " + (it.category === "Full Events" ? "Full Event" : it.category === "Full Episodes" ? "Full Episode" : "Full Match"); });
+
+        // Home rows
+        // Rails render lazily: 30 cards when a row nears the screen, 30 more as it scrolls
+        var RAILS = {}, railN = 0, STEP = 30;
+        var io = "IntersectionObserver" in window ? new IntersectionObserver(function (es) {
+          es.forEach(function (e) { if (e.isIntersecting) { io.unobserve(e.target); fillRail(e.target); } });
+        }, { rootMargin: "400px 0px" }) : null;
+        function fillRail(el) {
+          var r = RAILS[el.dataset.rail];
+          if (!r || r.n >= r.list.length) return;
+          var add = r.list.slice(r.n, r.n + STEP);
+          r.n += add.length;
+          el.insertAdjacentHTML("beforeend", add.map(function (it) { return card(it, r.sub ? r.sub(it) : null); }).join(""));
+        }
+        function wireRails(root) {
+          [].forEach.call(root.querySelectorAll(".x-rail[data-rail]"), function (el) { if (RAILS[el.dataset.rail].n) return; if (io) io.observe(el); else fillRail(el); });
+        }
+        document.addEventListener("scroll", function (e) {
+          var t = e.target;
+          if (t && t.dataset && t.dataset.rail && t.scrollLeft + t.clientWidth * 2 > t.scrollWidth) fillRail(t);
+        }, true);
+        function shelf(title, list, href, count, sub) {
+          var k = "r" + railN++;
+          RAILS[k] = { list: list, n: 0, sub: sub };
+          return '<section class="x-shelf"><div class="x-shelf__head"><h2>' + esc(title) + "</h2>" +
+            '<button type="button" class="x-arr" data-scroll="-1" aria-label="Scroll left">&lsaquo;</button><button type="button" class="x-arr" data-scroll="1" aria-label="Scroll right">&rsaquo;</button>' +
+            (href ? '<a class="x-see" href="' + href + '">See All ' + (count || list.length) + " &rsaquo;</a>" : "") +
+            '</div><div class="x-rail" data-rail="' + k + '"></div></section>';
+        }
+        function meDate(s) {
+          var p = s.split("-"), d = new Date(+p[0], +p[1] - 1, +p[2]);
+          return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+        }
+        // Logos come from static <img> tags in the markup, so their inlined sources carry over
+        function meSrc(k) { return esc($("me-src-" + k).getAttribute("src")); }
+        function meHead(plat, platAlt, title, sub, extra) {
+          return '<div class="x-me__head"><span class="x-me__lock"><img class="x-me__logo" src="' + meSrc("logo") + '" alt="WWE Main Event" /><span class="x-me__div" aria-hidden="true"></span>' + plat +
+            '</span><div class="x-me__b"><h2>' + esc(title) + "</h2><p>" + esc(sub) + '</p></div><div class="x-me__acts">' + extra + "</div></div>";
+        }
+        // Both sections, as rails on Home or as grids on their own page
+        function meHtml(grid) {
+          var arrows = grid ? "" : '<button type="button" class="x-arr" data-scroll="-1" aria-label="Scroll left">&lsaquo;</button><button type="button" class="x-arr" data-scroll="1" aria-label="Scroll right">&rsaquo;</button>';
+          var box = grid ? '<div class="x-grid">' : '<div class="x-rail">';
+          var yt = '<section class="x-shelf" aria-label="' + ME_YT + '">' +
+            meHead('<img class="x-me__plat" src="' + meSrc("yt") + '" alt="YouTube" />', "YouTube", ME_YT, "40 episodes · Jan 8 to Oct 8, 2026 · streamed on WWE's YouTube channel",
+              arrows + (grid ? "" : '<a class="x-see" href="#mainevent">See All ' + MEL.length + " &rsaquo;</a>")) + box +
+            MEL.map(function (it) {
+              return '<button type="button" class="x-card" data-meplay="' + it._k + '"><span class="x-thumb"><img loading="lazy" src="' + it._th + '" alt="" />' + (it._mins ? '<span class="x-rt">' + it._mins + " min</span>" : "") +
+                '</span><span class="x-card__t">' + esc(it.title) + '</span><span class="x-card__m">' + (it._mins ? it._mins + " min · " : "") + "YouTube</span></button>";
+            }).join("") + "</div></section>";
+          var ru = '<section class="x-shelf" aria-label="WWE Main Event on Rumble">' +
+            meHead('<img class="x-me__plat" src="' + meSrc("ru") + '" alt="Rumble" />', "Rumble", "WWE Main Event on Rumble", "Wednesdays 8 PM ET on Rumble since Oct 14, 2026",
+              arrows + '<a class="x-see" href="https://rumble.com/c/WWE" target="_blank" rel="noopener">Rumble.com/WWE &#8599;</a>') + box +
+            MER.map(function (r) {
+              var prem = /premium/i.test(r.note || "");
+              return '<a class="x-card" href="' + esc(r.url) + '" target="_blank" rel="noopener"><span class="x-thumb x-me__art"><img loading="lazy" src="' + meSrc("logo") + '" alt="" />' + (prem ? '<span class="x-lt">Rumble Premium</span>' : "") + (r.mins ? '<span class="x-rt">' + r.mins + " min</span>" : "") +
+                '</span><span class="x-card__t">' + esc(r.title) + '</span><span class="x-card__m">' + esc(meDate(r.date) + (r.mins ? " · " + r.mins + " min" : "")) + '</span><span class="x-me__cta">Watch on Rumble &#8599;</span></a>';
+            }).join("") + "</div></section>";
+          return yt + ru;
+        }
+        var mePage = false;
+        function renderME() { if (mePage) return; mePage = true; $("me-page").innerHTML = meHtml(true); }
+        $("home-rows").innerHTML = shelf("Recently Added", items.slice(-20).reverse()) + '<div id="home-list"></div>' + SHOWS.map(function (s, k) {
+          if (s === ME_YT) return meHtml(false);
+          if (s === ME_OLD) return "";
+          var l = byShow[s].filter(function (it) { return isCat(it, EPEV); });
+          return l.length ? shelf(s, l, "#show/" + k, byShow[s].length, yr) : "";
+        }).join("");
+        wireRails($("home-rows"));
+        function renderHomeList() {
+          var l = mine.map(function (i) { return items[i]; });
+          $("home-list").innerHTML = l.length ? shelf("My List", l) : "";
+          $("home-list").hidden = !l.length;
+          wireRails($("home-list"));
+        }
+        renderHomeList();
+
+        // Hubs
+        function hubRow(title, f, mix) { return { title: title, list: where(f), sub: mix ? null : yr }; }
+        function inHub(h, cs, show) { return function (it) { return it.hub === h && isCat(it, cs) && (!show || it.show === show); }; }
+        var HUBS = {
+          nxt: { name: "NXT", rows: [
+            { title: "Full Events", list: nxtEvents, sub: yr },
+            hubRow("Full Episodes", inHub("NXT", ["Full Episodes"])),
+            hubRow("Full Matches", inHub("NXT", ["Full Matches"])),
+            hubRow("Collections & Best Of", inHub("NXT", ["Collections & Best Of"])),
+            hubRow("Moments & Extras", inHub("NXT", ["Moments & Extras", "Highlights"]))
+          ] },
+          wcw: { name: "WCW", rows: [
+            { title: "Full Events (PPVs)", list: wcwPPV, sub: yr },
+            hubRow("Monday Nitro", inHub("WCW", ["Full Episodes"], "WCW Monday Nitro")),
+            hubRow("Thunder", inHub("WCW", ["Full Episodes"], "WCW Thunder")),
+            hubRow("Clash of the Champions", function (it) { return it.hub === "WCW" && it.show === "WCW Clash of the Champions"; }),
+            hubRow("Other TV", function (it) { return it.hub === "WCW" && it.category === "Full Episodes" && ["WCW Monday Nitro", "WCW Thunder", "WCW Clash of the Champions"].indexOf(it.show) < 0; }, true),
+            hubRow("Full Matches", inHub("WCW", ["Full Matches"]), true),
+            hubRow("Collections & Best Of", inHub("WCW", ["Collections & Best Of"]), true),
+            hubRow("Moments & Extras", inHub("WCW", ["Moments & Extras", "Highlights"]), true)
+          ] },
+          ecw: { name: "ECW", rows: [
+            hubRow("Full Episodes", inHub("ECW", ["Full Episodes"])),
+            hubRow("Full Events", inHub("ECW", ["Full Events"])),
+            hubRow("Full Matches", inHub("ECW", ["Full Matches"])),
+            hubRow("Collections & Best Of", inHub("ECW", ["Collections & Best Of"])),
+            hubRow("Moments & Extras", inHub("ECW", ["Moments & Extras", "Highlights"]))
+          ] }
+        };
+        Object.keys(HUBS).forEach(function (h) {
+          $(h + "-rows").innerHTML = HUBS[h].rows.map(function (r, k) { return r.list.length ? shelf(r.title, r.list, "#row/" + h + "/" + k, 0, r.sub) : ""; }).join("");
+          wireRails($(h + "-rows"));
+        });
+        [].forEach.call(document.querySelectorAll("[data-hubcount]"), function (e) {
+          e.textContent = items.filter(function (it) { return it.hub === e.dataset.hubcount; }).length.toLocaleString("en-US");
+        });
+
+        // Shows grid
+        $("tiles").innerHTML = SHOWS.map(function (s, k) {
+          var l = byShow[s];
+          if (s === ME_OLD) return "";
+          if (s === ME_YT) return '<button type="button" class="x-tile" data-go="mainevent"><img loading="lazy" src="' + MEL[0]._th + '" alt="" /><span>WWE Main Event<small>' + MEL.length + " on YouTube · " + MER.length + " on Rumble</small></span></button>";
+          return '<button type="button" class="x-tile" data-show="' + k + '"><img loading="lazy" src="' + thumb(l[l.length - 1]) + '" alt="" /><span>' + esc(s) + "<small>" + eps(l.length) + (years(l) ? " · " + years(l) : "") + "</small></span></button>";
+        }).join("");
+
+        // Show page
+        // Show page and hub "See All" lists share one view: year chips oldest first, undated under "More"
+        var spec = null, curYear = "all", shown = [], cPos = {}, cN = 0, CSTEP = 60;
+        function openColl(s) {
+          if (!spec || spec.key !== s.key) curYear = "all";
+          spec = s;
+          renderColl();
+        }
+        function epRow(it) {
+          return '<li class="x-ep"><button type="button" class="x-ep__main" data-play="' + it._i + '"><span class="x-ep__n">' + (cPos[it._i] + 1) + '</span><span class="x-thumb"><img loading="lazy" src="' + thumb(it) + '" alt="" />' + badge(it) +
+            '</span><span class="x-ep__b"><span class="x-card__t">' + esc(it.title) + '</span><span class="x-card__m">' + esc(spec.mix ? it.show + " · " + yr(it) : yr(it)) + (it.hours != null ? " · " + rt(it) : "") + '</span></span><span class="x-ep__p" aria-hidden="true">&#9654;</span></button>' +
+            '<button type="button" class="x-ic" data-info="' + it._i + '" aria-label="More info">&#9432;</button><button type="button" class="x-ic" data-mylist="' + it._i + '">+</button></li>';
+        }
+        function moreEps() {
+          var add = shown.slice(cN, cN + CSTEP);
+          cN += add.length;
+          $("sh-eps").insertAdjacentHTML("beforeend", add.map(epRow).join(""));
+          $("sh-more").hidden = cN >= shown.length;
+          $("sh-more").textContent = "Show more (" + (shown.length - cN) + " left)";
+          syncList();
+        }
+        function renderColl() {
+          var list = spec.list, ys = [];
+          cPos = {};
+          list.forEach(function (it, k) { cPos[it._i] = k; var y = yKey(it); if (ys.indexOf(y) < 0) ys.push(y); });
+          ys.sort(function (a, b) { return a === "none" ? 1 : b === "none" ? -1 : a - b; });
+          $("sh-back").href = spec.back;
+          $("sh-back").innerHTML = "&larr; " + esc(spec.backLabel);
+          $("sh-title").textContent = spec.title;
+          var hrs = list.reduce(function (a, it) { return a + (it.hours || 0); }, 0);
+          $("sh-meta").innerHTML = '<span class="pill">' + spec.unit(list.length) + "</span>" + (years(list) ? "<span>" + years(list) + "</span>" : "") + "<span>" + Math.round(hrs) + " hours to watch</span>";
+          $("sh-play").dataset.play = list[0]._i;
+          $("sh-years").innerHTML = ys.length > 1 ? ["all"].concat(ys).map(function (y) {
+            var n = y === "all" ? list.length : list.filter(function (it) { return yKey(it) === y; }).length;
+            return '<button type="button" class="x-chip" data-year="' + y + '" aria-pressed="' + (y === curYear) + '">' + (y === "all" ? "All years" : y === "none" ? "More" : y) + " · " + n + "</button>";
+          }).join("") : "";
+          shown = list.filter(function (it) { return curYear === "all" || yKey(it) === curYear; });
+          cN = 0;
+          $("sh-eps").innerHTML = "";
+          moreEps();
+        }
+        $("sh-more").addEventListener("click", moreEps);
+        if (io) new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && !$("sh-more").hidden && (view === "show" || view === "row")) moreEps(); }); }, { rootMargin: "600px 0px" }).observe($("sh-more"));
+        function titles(n) { return n + (n === 1 ? " title" : " titles"); }
+        function renderShow(k) {
+          var s = SHOWS[k] != null ? SHOWS[k] : SHOWS[0];
+          if (s === ME_YT) { location.replace("#mainevent"); return; }
+          openColl({ key: "show:" + s, title: s, list: byShow[s], back: "#shows", backLabel: "All shows", unit: eps });
+        }
+        function renderRow(h, k) {
+          var hub = HUBS[h] || HUBS.nxt, r = hub.rows[k] || hub.rows[0];
+          openColl({ key: "row:" + h + ":" + k, title: hub.name + " · " + r.title, list: r.list, back: "#" + h, backLabel: hub.name + " Hub", unit: r.list.every(function (it) { return it.category === "Full Episodes"; }) ? eps : titles, mix: !r.sub });
+        }
+
+        // Search
+        var fShow = "all", fDec = "all", fHub = "all", fCat = "all", sLimit = 48;
+        var HUBN = ["WWE", "NXT", "WCW", "ECW"].filter(function (h) { return items.some(function (it) { return it.hub === h; }); });
+        var CATS = ["Full Episodes", "Full Events", "Full Matches", "Collections & Best Of", "Highlights", "Moments & Extras"];
+        items.forEach(function (it) { if (it.category && CATS.indexOf(it.category) < 0) CATS.push(it.category); });
+        CATS = CATS.filter(function (c) { return items.some(function (it) { return it.category === c; }); });
+        var decs = [];
+        items.forEach(function (it) { var d = it.year == null ? "none" : "" + Math.floor(it.year / 10) * 10; if (decs.indexOf(d) < 0) decs.push(d); });
+        decs.sort(function (a, b) { return a === "none" ? 1 : b === "none" ? -1 : a - b; });
+        function chipsHtml(vals, cur, attr, lab) {
+          return vals.map(function (v) { return '<button type="button" class="x-chip" ' + attr + '="' + esc(v) + '" aria-pressed="' + (v === cur) + '">' + esc(lab(v)) + "</button>"; }).join("");
+        }
+        function renderSearch() {
+          $("f-hub").innerHTML = chipsHtml(["all"].concat(HUBN), fHub, "data-fhub", function (v) { return v === "all" ? "All hubs" : v; });
+          $("f-cat").innerHTML = chipsHtml(["all"].concat(CATS), fCat, "data-fcat", function (v) { return v === "all" ? "All categories" : v; });
+          $("f-show").innerHTML = chipsHtml(["all"].concat(SHOWS.map(String)), fShow, "data-fshow", function (v) { return v === "all" ? "All shows" : v; });
+          $("f-dec").innerHTML = chipsHtml(["all"].concat(decs), fDec, "data-fdec", function (v) { return v === "all" ? "All decades" : v === "none" ? "More" : v + "s"; });
+          var terms = $("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+          var hits = items.filter(function (it) {
+            if (fHub !== "all" && it.hub !== fHub) return false;
+            if (fCat !== "all" && it.category !== fCat) return false;
+            if (fShow !== "all" && it.show !== fShow) return false;
+            if (fDec !== "all" && (it.year == null ? "none" : "" + Math.floor(it.year / 10) * 10) !== fDec) return false;
+            var hay = (it.title + " " + it.show + " " + it.hub + " " + it.category + " " + (it.year || "")).toLowerCase();
+            return terms.every(function (t) { return hay.indexOf(t) > -1; });
+          });
+          hits.sort(function (a, b) { return (a.year || 9999) - (b.year || 9999) || a._i - b._i; });
+          $("s-count").textContent = hits.length + (hits.length === 1 ? " title" : " titles") + (terms.length ? " match \u201c" + $("q").value.trim() + "\u201d" : "");
+          $("s-res").innerHTML = hits.length ? hits.slice(0, sLimit).map(function (it) { return card(it); }).join("") : '<p class="x-empty">No titles match. Try a wrestler, an event or another decade.</p>';
+          $("s-more").hidden = hits.length <= sLimit;
+          $("s-more").textContent = "Show more (" + (hits.length - sLimit) + " left)";
+        }
+        $("q").addEventListener("input", function () { sLimit = 48; renderSearch(); });
+        $("s-more").addEventListener("click", function () { sLimit += 48; renderSearch(); });
+
+        function renderList() {
+          $("l-res").innerHTML = mine.map(function (i) { return card(items[i]); }).join("");
+          $("l-empty").hidden = mine.length > 0;
+        }
+
+        // Survivor Series playlist
+        var SS = JSON.parse($("ss-data").textContent), SSL = [];
+        var SSQ = { name: "Road to Survivor Series", len: function () { return SSL.length; }, make: function (j) { return SSL[j]; } };
+        function mq(id) { return "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg"; }
+        SS.forEach(function (sec) {
+          sec.items.forEach(function (x) {
+            SSL.push({ _id: x.id, title: x.title, url: x.url || "https://www.youtube.com/watch?v=" + x.id, show: sec.name, hours: x.mins ? x.mins / 60 : null, _th: mq(x.id),
+              _m: [sec.name, x.mins ? x.mins + " min" : "", x.channel].filter(Boolean).join(" · "), _mins: x.mins, _ch: x.channel, _Q: SSQ, _k: SSL.length });
+          });
+        });
+        var ssDone = false;
+        function renderSS() {
+          if (ssDone) return;
+          ssDone = true;
+          var p = $("ss-poster").cloneNode(false);
+          p.removeAttribute("id"); p.removeAttribute("class");
+          $("ss-head").appendChild(p);
+          $("ss-nav").innerHTML = SS.map(function (sec, s) { return '<button type="button" class="x-chip" data-sec="' + s + '">' + esc(sec.name) + " · " + sec.items.length + "</button>"; }).join("");
+          var k = 0;
+          $("ss-secs").innerHTML = SS.map(function (sec, s) {
+            return '<section class="x-sec" id="ss-sec-' + s + '"><div class="x-shelf__head"><h2>' + esc(sec.name) + "<small>" + sec.items.length + (sec.items.length === 1 ? " video" : " videos") + '</small></h2></div><ol class="x-eps">' +
+              sec.items.map(function (x, j) {
+                var it = SSL[k++], m = [it._mins ? it._mins + " min" : "", it._ch].filter(Boolean).join(" · ");
+                return '<li class="x-ep"><button type="button" class="x-ep__main" data-ssplay="' + it._k + '"><span class="x-ep__n">' + (j + 1) + '</span><span class="x-thumb"><img loading="lazy" src="' + it._th + '" alt="" /></span><span class="x-ep__b"><span class="x-card__t">' + esc(it.title) +
+                  '</span><span class="x-card__m">' + esc(m) + '</span></span><span class="x-ep__p" aria-hidden="true">&#9654;</span></button></li>';
+              }).join("") + "</ol></section>";
+          }).join("");
+        }
+
+        // All Channels: data blocks stay unparsed until a channel opens, then parse one part at a time
+        var MAN = JSON.parse($("lib-manifest").textContent), LIB = {};
+        MAN.forEach(function (m, ci) { m._ci = ci; LIB[m.handle] = { m: m, items: [], n: 0, done: false }; });
+        var TOTAL = MAN.reduce(function (a, m) { return a + m.count; }, 0);
+        [].forEach.call(document.querySelectorAll("[data-libtotal]"), function (e) { e.textContent = TOTAL.toLocaleString("en-US"); });
+        [].forEach.call(document.querySelectorAll("[data-chcount]"), function (e) { var L = LIB[e.dataset.chcount]; if (L) e.textContent = L.m.count.toLocaleString("en-US"); });
+        var TYPES = [["v", "Videos", "videos"], ["l", "Live", "live"], ["s", "Shorts", "shorts"], ["all", "All", "count"]];
+        var lCh = MAN[0].handle, lType = "v", lSort = "new", lQ = "", LPAGE = 60, lShown = 0, lRes = [], lInit = false, lBusy = false, lT = null;
+        function fmtDur(s) { var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60; return h ? h + ":" + pad(m) + ":" + pad(x) : m + ":" + pad(x); }
+        function fmtViews(n) {
+          function r(v, u) { return (v >= 100 ? Math.round(v) : Math.round(v * 10) / 10) + u; }
+          return n >= 1e9 ? r(n / 1e9, "B") : n >= 1e6 ? r(n / 1e6, "M") : n >= 1e3 ? r(n / 1e3, "K") : "" + n;
+        }
+        function chList() { return lCh === "all" ? MAN.map(function (m) { return LIB[m.handle]; }) : [LIB[lCh]]; }
+        function readPart(file, cb) {
+          var el = $("d-" + file.replace(/\.json$/, "")), txt = el ? el.textContent : "";
+          if (txt && txt.trim()) {
+            var d = null;
+            try { d = JSON.parse(txt); } catch (e) {}
+            el.textContent = "";
+            cb((d && d.items) || []);
+          } else if (el && el.getAttribute("src") && window.fetch) {
+            fetch(el.getAttribute("src")).then(function (r) { return r.json(); }).then(function (d) { cb(d.items || []); }, function () { cb([]); });
+          } else cb([]);
+        }
+        function pump() {
+          if (lBusy) return;
+          var L = chList().filter(function (x) { return !x.done; })[0];
+          if (!L) { libStatus(); return; }
+          lBusy = true;
+          libStatus();
+          setTimeout(function () {
+            if (L.done || L.busy) { lBusy = false; setTimeout(pump, 60); return; }
+            L.busy = true;
+            readPart(L.m.parts[L.n], function (arr) {
+              for (var i = 0; i < arr.length; i++) { arr[i][5] = L.m._ci; L.items.push(arr[i]); }
+              L.n++;
+              if (L.n >= L.m.parts.length) L.done = true;
+              L.busy = false;
+              lBusy = false;
+              if (chList().indexOf(L) > -1) refresh(false);
+              setTimeout(pump, 20);
+            });
+          }, 30);
+        }
+        // Shared by the channel hubs' "Full Matches & Episodes" row and its See all filter
+        var FULLRE = /full match|full episode|full event|full show|lucha completa|episodio completo|nzal kamil|نزال كامل|komplettes match|ganzes match/i, lFull = false;
+        function libMatch(t, terms) {
+          if (lType !== "all" && t[4] !== lType) return false;
+          if (lFull && (t[4] === "s" || !FULLRE.test(t[1]))) return false;
+          if (!terms.length) return true;
+          var s = t[6] || (t[6] = String(t[1]).toLowerCase());
+          for (var i = 0; i < terms.length; i++) if (s.indexOf(terms[i]) < 0) return false;
+          return true;
+        }
+        function refresh(reset) {
+          var terms = lQ.toLowerCase().split(/\s+/).filter(Boolean), R = [];
+          chList().forEach(function (L) { var a = L.items; for (var i = 0; i < a.length; i++) if (libMatch(a[i], terms)) R.push(a[i]); });
+          if (lSort === "views") R.sort(function (a, b) { return (b[3] || 0) - (a[3] || 0); });
+          var same = !reset && lShown <= R.length;
+          if (same) for (var i = 0; i < lShown; i++) if (R[i] !== lRes[i]) { same = false; break; }
+          var keep = reset ? LPAGE : Math.max(lShown, LPAGE);
+          lRes = R;
+          var empty = $("lib-res").querySelector(".x-empty");
+          if (empty) empty.remove();
+          if (!same) { lShown = 0; $("lib-res").innerHTML = ""; libMore(keep); }
+          else if (lShown < LPAGE) libMore(LPAGE - lShown);
+          else { $("lib-more").hidden = lShown >= lRes.length; $("lib-more").textContent = "Load more (" + (lRes.length - lShown).toLocaleString("en-US") + " left)"; }
+          var loading = chList().some(function (L) { return !L.done; });
+          if (!lRes.length && !loading) $("lib-res").innerHTML = '<p class="x-empty">No videos match. Try another word, type or channel.</p>';
+          libStatus();
+        }
+        function libCard(t, k) {
+          var tag = t[4] === "s" ? '<span class="x-lt">Short</span>' : t[4] === "l" ? '<span class="x-lt x-lt--live">Live</span>' : "";
+          var m = [t[3] != null ? fmtViews(t[3]) + " views" : "", lCh === "all" ? MAN[t[5]].name : ""].filter(Boolean).join(" · ");
+          return '<button type="button" class="x-card" data-lplay="' + k + '"><span class="x-thumb"><img loading="lazy" src="' + mq(t[0]) + '" alt="" />' + tag + (t[2] ? '<span class="x-rt">' + fmtDur(t[2]) + "</span>" : "") +
+            '</span><span class="x-card__t">' + esc(t[1]) + '</span><span class="x-card__m">' + esc(m) + "</span></button>";
+        }
+        function libMore(n) {
+          var add = lRes.slice(lShown, lShown + (n || LPAGE)), base = lShown;
+          $("lib-res").insertAdjacentHTML("beforeend", add.map(function (t, j) { return libCard(t, base + j); }).join(""));
+          lShown += add.length;
+          $("lib-more").hidden = lShown >= lRes.length;
+          $("lib-more").textContent = "Load more (" + (lRes.length - lShown).toLocaleString("en-US") + " left)";
+        }
+        function libStatus() {
+          var cl = chList(), loading = cl.some(function (L) { return !L.done; });
+          var got = cl.reduce(function (a, L) { return a + L.items.length; }, 0), tot = cl.reduce(function (a, L) { return a + L.m.count; }, 0);
+          var s = lRes.length.toLocaleString("en-US") + (lRes.length === 1 ? " result" : " results") + (lQ ? " for \u201c" + lQ + "\u201d" : "");
+          if (loading) s = (got ? s + " so far · " : "") + "Loading " + got.toLocaleString("en-US") + " of " + tot.toLocaleString("en-US") + " videos\u2026";
+          $("lib-status").innerHTML = (loading ? '<span class="x-spin" aria-hidden="true"></span>' : "") + "<span>" + esc(s) + "</span>";
+        }
+        function libChips() {
+          $("lib-ch").innerHTML = [["all", "All channels", TOTAL]].concat(MAN.map(function (m) { return [m.handle, m.name, m.count]; })).map(function (c) {
+            return '<button type="button" class="x-chip" data-lch="' + esc(c[0]) + '" aria-pressed="' + (c[0] === lCh) + '">' + esc(c[1]) + " · " + c[2].toLocaleString("en-US") + "</button>";
+          }).join("");
+          var ms = lCh === "all" ? MAN : [LIB[lCh].m];
+          $("lib-type").innerHTML = TYPES.map(function (ty) {
+            var n = ms.reduce(function (a, m) { return a + (m[ty[2]] || 0); }, 0);
+            return '<button type="button" class="x-chip" data-ltype="' + ty[0] + '" aria-pressed="' + (ty[0] === lType) + '">' + ty[1] + " · " + n.toLocaleString("en-US") + "</button>";
+          }).join("") + '<button type="button" class="x-chip" data-lfull="1" aria-pressed="' + lFull + '">Full matches &amp; episodes</button>';
+          $("lib-sort").innerHTML = [["new", "Newest"], ["views", "Most viewed"]].map(function (o) {
+            return '<button type="button" class="x-chip" data-lsort="' + o[0] + '" aria-pressed="' + (o[0] === lSort) + '">' + o[1] + "</button>";
+          }).join("");
+          var nm = lCh === "all" ? "all channels" : LIB[lCh].m.name;
+          $("lib-q").placeholder = "Search " + nm + " titles";
+          $("lib-q").setAttribute("aria-label", "Search titles in " + nm);
+          $("lib-note").hidden = !(lCh === "all" && lSort === "new");
+        }
+        function setLib() { libChips(); refresh(true); pump(); }
+        function libItem(arr, j, Q) {
+          var t = arr[j], ch = MAN[t[5]].name;
+          return { _id: t[0], title: t[1], url: "https://www.youtube.com/watch?v=" + t[0], show: ch, hours: t[2] ? t[2] / 3600 : null, _th: mq(t[0]),
+            _m: [ch, t[3] != null ? fmtViews(t[3]) + " views" : "", t[4] === "s" ? "Short" : t[4] === "l" ? "Live" : ""].filter(Boolean).join(" · "), _Q: Q, _k: j };
+        }
+        function playLib(k) {
+          var arr = lRes, Q = { name: lCh === "all" ? "All channels" : LIB[lCh].m.name, len: function () { return arr.length; }, make: function (j) { return libItem(arr, j, Q); } };
+          if (arr[k]) play(libItem(arr, k, Q));
+        }
+        $("lib-q").addEventListener("input", function () { clearTimeout(lT); lT = setTimeout(function () { lQ = $("lib-q").value.trim(); refresh(true); }, 200); });
+        $("lib-more").addEventListener("click", function () { libMore(LPAGE); });
+        if (io) new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && !$("lib-more").hidden && view === "all") libMore(LPAGE); }); }, { rootMargin: "600px 0px" }).observe($("lib-more"));
+
+        // Channel hubs: load one channel's data with the same reader, then build curated rows
+        function chLoad(L, cb) {
+          if (L.done) { cb(); return; }
+          if (L.busy) { setTimeout(function () { chLoad(L, cb); }, 60); return; }
+          L.busy = true;
+          readPart(L.m.parts[L.n], function (arr) {
+            for (var i = 0; i < arr.length; i++) { arr[i][5] = L.m._ci; L.items.push(arr[i]); }
+            L.n++;
+            if (L.n >= L.m.parts.length) L.done = true;
+            L.busy = false;
+            if (lInit && chList().indexOf(L) > -1) refresh(false);
+            setTimeout(function () { chLoad(L, cb); }, 20);
+          });
+        }
+        var chCur = null, chRows = [], CHROW = 20;
+        function chCard(t, r, j) {
+          var tag = t[4] === "s" ? '<span class="x-lt">Short</span>' : t[4] === "l" ? '<span class="x-lt x-lt--live">Live</span>' : "";
+          return '<button type="button" class="x-card" data-hplay="' + r + ":" + j + '"><span class="x-thumb"><img loading="lazy" src="' + mq(t[0]) + '" alt="" />' + tag + (t[2] ? '<span class="x-rt">' + fmtDur(t[2]) + "</span>" : "") +
+            '</span><span class="x-card__t">' + esc(t[1]) + '</span><span class="x-card__m">' + (t[3] != null ? fmtViews(t[3]) + " views" : "") + "</span></button>";
+        }
+        function chBuild(h) {
+          var a = LIB[h].items, ns = a.filter(function (t) { return t[4] !== "s"; });
+          chRows = [
+            { title: "Latest", list: ns, type: "v", sort: "new" },
+            { title: "Most Viewed", list: ns.slice().sort(function (x, y) { return (y[3] || 0) - (x[3] || 0); }), type: "v", sort: "views" },
+            { title: "Full Matches & Episodes", list: ns.filter(function (t) { return FULLRE.test(t[1]); }), type: "all", sort: "new", full: true },
+            { title: "Live & Streams", list: a.filter(function (t) { return t[4] === "l"; }), type: "l", sort: "new" },
+            { title: "Shorts", list: a.filter(function (t) { return t[4] === "s"; }), type: "s", sort: "new" }
+          ];
+          $("ch-rows").innerHTML = chRows.map(function (r, k) {
+            if (!r.list.length) return "";
+            return '<section class="x-shelf"><div class="x-shelf__head"><h2>' + esc(r.title) + "</h2>" +
+              '<button type="button" class="x-arr" data-scroll="-1" aria-label="Scroll left">&lsaquo;</button><button type="button" class="x-arr" data-scroll="1" aria-label="Scroll right">&rsaquo;</button>' +
+              '<button type="button" class="x-see" data-chsee="' + k + '">See all ' + r.list.length.toLocaleString("en-US") + " &rsaquo;</button></div>" +
+              '<div class="x-rail">' + r.list.slice(0, CHROW).map(function (t, j) { return chCard(t, k, j); }).join("") + "</div></section>";
+          }).join("") || '<p class="x-empty">No videos found for this channel.</p>';
+          $("ch-status").innerHTML = "";
+        }
+        function renderCh(h) {
+          var L = LIB[h] || LIB[MAN[1].handle];
+          h = L.m.handle;
+          chCur = h;
+          var src = document.querySelector('[data-chlogo="' + h + '"]');
+          $("ch-logo").innerHTML = "";
+          if (src) { var im = src.cloneNode(false); im.removeAttribute("class"); im.removeAttribute("data-chlogo"); $("ch-logo").appendChild(im); }
+          $("ch-name").textContent = L.m.name;
+          $("ch-meta").innerHTML = '<span class="pill">' + L.m.count.toLocaleString("en-US") + " uploads</span><span>" +
+            [[L.m.videos, "videos"], [L.m.live, "live"], [L.m.shorts, "shorts"]].filter(function (x) { return x[0]; }).map(function (x) { return x[0].toLocaleString("en-US") + " " + x[1]; }).join(" · ") + "</span>";
+          $("ch-yt").href = L.m.url;
+          $("ch-rows").innerHTML = "";
+          if (L.done) { chBuild(h); return; }
+          $("ch-status").innerHTML = '<span class="x-spin" aria-hidden="true"></span><span>Loading ' + L.m.count.toLocaleString("en-US") + " videos\u2026</span>";
+          setTimeout(function () { chLoad(L, function () { if (view === "ch" && chCur === h) chBuild(h); }); }, 30);
+        }
+        function playCh(r, j) {
+          var row = chRows[r];
+          if (!row || !row.list[j]) return;
+          var arr = row.list, Q = { name: LIB[chCur].m.name + " · " + row.title, len: function () { return arr.length; }, make: function (k) { return libItem(arr, k, Q); } };
+          play(libItem(arr, j, Q));
+        }
+        function seeCh(r) {
+          var row = chRows[r];
+          if (!row) return;
+          lCh = chCur; lType = row.type; lSort = row.sort; lFull = !!row.full; lQ = ""; $("lib-q").value = "";
+          lInit = true;
+          setLib();
+          location.hash = "all";
+        }
+
+        // Router
+        function route() {
+          var p = (location.hash.slice(1) || "home").split("/"), v = p[0];
+          if (["home", "nxt", "wcw", "ecw", "shows", "show", "row", "search", "list", "ss", "all", "ch", "mainevent"].indexOf(v) < 0) return;
+          var hub = HUBS[v] ? v : v === "row" && HUBS[p[1]] ? p[1] : "";
+          view = v;
+          if (hub) document.body.dataset.hub = hub; else delete document.body.dataset.hub;
+          ["home", "nxt", "wcw", "ecw", "shows", "show", "search", "list", "ss", "all", "ch", "mainevent"].forEach(function (k) { $("v-" + k).hidden = k !== (v === "row" ? "show" : v); });
+          [].forEach.call(document.querySelectorAll("[data-tab]"), function (a) {
+            var on = a.dataset.tab === v || ((v === "show" || v === "mainevent") && a.dataset.tab === "shows") || (v === "row" && a.dataset.tab === hub);
+            if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+          });
+          if (v === "show") renderShow(+p[1] || 0);
+          if (v === "row") renderRow(hub || "nxt", +p[2] || 0);
+          if (v === "search") renderSearch();
+          if (v === "list") renderList();
+          if (v === "ss") renderSS();
+          if (v === "mainevent") renderME();
+          if (v === "all" && !lInit) { lInit = true; setLib(); }
+          if (v === "ch") renderCh(decodeURIComponent(p[1] || ""));
+          closeInfo();
+          window.scrollTo(0, 0);
+          if (v === "search" && window.innerWidth > 699) $("q").focus({ preventScroll: true });
+        }
+        window.addEventListener("hashchange", route);
+
+        // More Info sheet
+        var lastFocus = null;
+        function openInfo(it) {
+          var t = split(it.title);
+          $("in-art").innerHTML = '<img src="' + thumb(it) + '" alt="' + esc(t[0]) + '" />';
+          $("in-show").textContent = it.show;
+          $("in-title").textContent = it.title;
+          $("in-meta").innerHTML = "<span>" + yr(it) + "</span>" + (it.hours != null ? '<span class="pill">' + rt(it) + "</span>" : "") +
+            "<span>" + (byShow[it.show].indexOf(it) + 1) + " of " + eps(byShow[it.show].length) + "</span>";
+          $("in-play").dataset.play = it._i;
+          $("in-list").dataset.mylist = it._i;
+          $("in-showpage").dataset.show = SHOWS.indexOf(it.show);
+          var l = byShow[it.show], k = l.indexOf(it);
+          var more = l.slice(k + 1).concat(l.slice(0, k)).slice(0, 12);
+          $("in-more").innerHTML = more.length ? more.map(function (m) { return card(m, yr(m)); }).join("") : '<p class="x-empty">This is the only one from this show.</p>';
+          $("in-more").scrollLeft = 0;
+          if ($("info").hidden) { lastFocus = document.activeElement; $("info").hidden = false; document.documentElement.style.overflow = "hidden"; }
+          document.querySelector(".x-sheet__panel").scrollTop = 0;
+          syncList();
+          $("in-play").focus({ preventScroll: true });
+        }
+        function closeInfo() {
+          if ($("info").hidden) return;
+          $("info").hidden = true;
+          if ($("player").hidden) document.documentElement.style.overflow = "";
+          if (lastFocus && lastFocus.focus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
+        }
+
+        // Player
+        var cur = null, plFocus = null;
+        // A plain embed: no IFrame API, no origin handshake, no automatic redirects
+        function embed(id) {
+          return "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(id) + "?autoplay=1&playsinline=1&rel=0";
+        }
+        // Replace the stage's iframe with a fresh one, so every play starts clean
+        function setFrame(src) {
+          var stage = document.querySelector("#player .x-stage"), f = document.createElement("iframe");
+          f.id = "pl-frame";
+          f.title = "WWE video player";
+          f.setAttribute("allow", "autoplay; encrypted-media; picture-in-picture; fullscreen");
+          f.setAttribute("allowfullscreen", "");
+          f.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+          f.src = src;
+          stage.innerHTML = "";
+          stage.appendChild(f);
+        }
+        function showPlayer() {
+          if (!$("player").hidden) return;
+          plFocus = document.activeElement;
+          $("player").hidden = false;
+          document.documentElement.style.overflow = "hidden";
+        }
+        // A play queue: a catalog show, or an external list (playlist, channel results) with make(k)
+        function ctx(it) {
+          if (it._Q) return { name: it._Q.name, n: it._Q.len(), k: it._k, at: function (j) { return j >= 0 && j < it._Q.len() ? it._Q.make(j) : null; } };
+          var l = byShow[it.show];
+          return { name: it.show, n: l.length, k: l.indexOf(it), at: function (j) { return l[j] || null; } };
+        }
+        function play(it) {
+          // Open the sheet first, so a later failure can never leave the reader with nothing
+          try { closeInfo(); } catch (err) { $("info").hidden = true; }
+          try { showPlayer(); } catch (err) { if (window.console) console.error(err); }
+          try { fillPlayer(it); }
+          catch (err) {
+            if (window.console) console.error("Player failed to open", err);
+            $("pl-note").hidden = false;
+            $("pl-note").textContent = "This video couldn\u2019t load here. Use the YouTube link below.";
+          }
+        }
+        function fillPlayer(it) {
+          if (!it) throw new Error("No video");
+          $("pl-note").hidden = true;
+          cur = it;
+          var id = vid(it);
+          if (id) {
+            setFrame(embed(id));
+            $("pl-yt").href = "https://www.youtube.com/watch?v=" + encodeURIComponent(id);
+          }
+          $("pl-title").textContent = it.title;
+          var c = ctx(it), k = c.k, nx = c.at(k + 1);
+          $("pl-show").textContent = c.name + " · " + (k + 1).toLocaleString("en-US") + " of " + c.n.toLocaleString("en-US");
+          $("pl-prev").disabled = k <= 0;
+          $("pl-next").disabled = !nx;
+          $("pl-up").innerHTML = nx
+            ? '<span class="x-thumb"><img src="' + thumb(nx) + '" alt="" />' + badge(nx) + '</span><span class="x-up__b"><span class="x-tag">Up Next</span><span class="x-card__t">' + esc(nx.title) +
+              '</span><span class="x-card__m">' + esc(nx._m || yr(nx)) + '</span></span><button type="button" class="x-btn x-btn--play" ' + (nx._Q ? 'data-step="1"' : 'data-play="' + nx._i + '"') + '>&#9654; Play</button>'
+            : it._Q
+            ? '<span class="x-up__b"><span class="x-tag">Up Next</span><span class="x-card__t">That\u2019s the last one in ' + esc(c.name) + '.</span></span><button type="button" class="x-btn" data-close="player">Back</button>'
+            : '<span class="x-up__b"><span class="x-tag">Up Next</span><span class="x-card__t">That\u2019s the last one from ' + esc(it.show) + '.</span></span><button type="button" class="x-btn" data-show="' + SHOWS.indexOf(it.show) + '">Back to show</button>';
+          $("player").scrollTop = 0;
+          $("pl-back").focus({ preventScroll: true });
+        }
+        function step(d) {
+          if (!cur) return;
+          var c = ctx(cur), nx = c.at(c.k + d);
+          if (nx) play(nx);
+        }
+        function closePlayer() {
+          if ($("player").hidden) return;
+          if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+          $("player").classList.remove("is-theater");
+          setFrame("about:blank");
+          $("player").hidden = true;
+          document.documentElement.style.overflow = "";
+          if (plFocus && plFocus.focus && document.contains(plFocus)) plFocus.focus({ preventScroll: true });
+        }
+        $("pl-back").addEventListener("click", closePlayer);
+        $("pl-prev").addEventListener("click", function () { step(-1); });
+        $("pl-next").addEventListener("click", function () { step(1); });
+
+        // One click handler for every data-action
+        document.addEventListener("click", function (e) {
+          var t = e.target.closest("[data-play],[data-info],[data-mylist],[data-show],[data-close],[data-feat],[data-scroll],[data-year],[data-fshow],[data-fdec],[data-fhub],[data-fcat],[data-ssplay],[data-step],[data-go],[data-sec],[data-lplay],[data-lch],[data-ltype],[data-lsort],[data-hplay],[data-chsee],[data-lfull],[data-meplay]");
+          if (!t) return;
+          var d = t.dataset;
+          if (d.meplay != null) { if (MEL[+d.meplay]) play(MEL[+d.meplay]); }
+          else if (d.hplay != null) { var hp = d.hplay.split(":"); playCh(+hp[0], +hp[1]); }
+          else if (d.chsee != null) seeCh(+d.chsee);
+          else if (d.lfull != null) { lFull = !lFull; libChips(); refresh(true); }
+          else if (d.ssplay != null) { if (SSL[+d.ssplay]) play(SSL[+d.ssplay]); }
+          else if (d.step != null) step(+d.step);
+          else if (d.go != null) location.hash = d.go;
+          else if (d.sec != null) { var sc = $("ss-sec-" + d.sec); if (sc) sc.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); }
+          else if (d.lplay != null) playLib(+d.lplay);
+          else if (d.lch != null) { lCh = d.lch; setLib(); }
+          else if (d.ltype != null) { lType = d.ltype; libChips(); refresh(true); }
+          else if (d.lsort != null) { lSort = d.lsort; libChips(); refresh(true); }
+          else if (d.close === "player") closePlayer();
+          else if (d.mylist != null) toggleList(items[+d.mylist]);
+          else if (d.play != null) play(items[+d.play]);
+          else if (d.info != null) openInfo(items[+d.info]);
+          else if (d.show != null) { closePlayer(); closeInfo(); location.hash = "show/" + d.show; }
+          else if (d.close === "info") closeInfo();
+          else if (d.feat != null) { var hr = heroes[t.closest("[data-hero]").dataset.hero]; hr.show(+d.feat); hr.start(); }
+          else if (d.scroll != null) { var r = t.closest(".x-shelf").querySelector(".x-rail"); r.scrollBy({ left: +d.scroll * r.clientWidth * 0.85, behavior: reduce ? "auto" : "smooth" }); }
+          else if (d.year != null) { curYear = d.year; renderColl(); }
+          else if (d.fhub != null) { fHub = d.fhub; sLimit = 48; renderSearch(); }
+          else if (d.fcat != null) { fCat = d.fcat; sLimit = 48; renderSearch(); }
+          else if (d.fshow != null) { fShow = d.fshow; sLimit = 48; renderSearch(); }
+          else if (d.fdec != null) { fDec = d.fdec; sLimit = 48; renderSearch(); }
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key !== "Escape") return;
+          if (!$("player").hidden) { if ($("player").classList.contains("is-theater")) $("player").classList.remove("is-theater"); else closePlayer(); }
+          else closeInfo();
+        });
+        document.addEventListener("DOMContentLoaded", function () { document.documentElement.setAttribute("data-theme", "dark"); });
+        if (!location.hash) try { history.replaceState(null, "", "#home"); } catch (e) {}
+        route();
+      })();
+    </script>
+  </body>
+</html>
