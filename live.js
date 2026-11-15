@@ -71,6 +71,7 @@
     ".lv-auth input{width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #333847;background:#07080c;color:#fff;font-size:16px}" +
     ".lv-go{width:100%;margin-top:16px;padding:13px;border:0;border-radius:10px;background:#d90429;color:#fff;font-weight:800;font-size:16px;cursor:pointer}" +
     ".lv-sw{margin-top:12px;text-align:center;font-size:14px}.lv-sw button{background:none;border:0;color:#7fb2ff;font-weight:700;cursor:pointer;font-size:14px}" +
+    ".lv-n{font-size:12px;font-weight:700;color:#cfd3dc;background:#0007;padding:2px 6px;border-radius:999px}.lv-watch{position:absolute;top:10px;right:10px;z-index:2;pointer-events:none;background:rgba(217,4,41,.9);padding:4px 9px;border-radius:6px;font-weight:800;font-size:12px}" +
     ".lv-err{color:#ff7a8a;font-size:14px;margin-top:10px;min-height:1em}.lv-me{font-size:13px;color:#9aa0ad}.lv-me button{background:none;border:0;color:#7fb2ff;cursor:pointer;font-size:13px}";
   var st = d.createElement("style"); st.textContent = css; d.head.appendChild(st);
 
@@ -84,7 +85,7 @@
 
   function open() { ov.hidden = false; d.documentElement.style.overflow = "hidden"; if (location.hash !== "#live") history.replaceState(null, "", "#live"); render(); }
   function close() {
-    ov.hidden = true; d.documentElement.style.overflow = ""; stop();
+    rtStop(); ov.hidden = true; d.documentElement.style.overflow = ""; stop();
     if (location.hash === "#live") history.replaceState(null, "", location.pathname + location.search);
   }
   function stop() { clearTimeout(timer); clearInterval(guideTimer); if (player && player.destroy) { try { player.destroy(); } catch (e) {} } player = null; }
@@ -133,7 +134,50 @@
   }
   function signOut() {
     if (session) fetch(SB + "/auth/v1/logout", { method: "POST", headers: { apikey: KEY, Authorization: "Bearer " + session.access_token } }).catch(function () {});
-    session = null; save(); renderAuth("in");
+    session = null; save(); rtStop(); renderAuth("in");
+  }
+
+
+  // ---------- live viewer counts (Supabase Realtime presence) ----------
+  var rt = { ws: null, ref: 1, joined: false, state: {}, hb: null, retry: null, want: false };
+  function rtSend(o) { if (rt.ws && rt.ws.readyState === 1) rt.ws.send(JSON.stringify(o)); }
+  function rtTopic() { return "realtime:live-" + (CFG.site || "site"); }
+  function rtTrack() { if (rt.joined && cur) rtSend({ topic: rtTopic(), event: "presence", payload: { type: "presence", event: "track", payload: { ch: cur } }, ref: String(++rt.ref), join_ref: "1" }); }
+  function rtStart() {
+    rt.want = true;
+    if (rt.ws || !window.WebSocket) return;
+    var uid = session && session.user && session.user.id || ("anon-" + Math.random().toString(36).slice(2));
+    var ws = rt.ws = new WebSocket(SB.replace("https", "wss") + "/realtime/v1/websocket?apikey=" + KEY + "&vsn=1.0.0");
+    ws.onopen = function () {
+      rt.state = {}; rt.joined = false;
+      rtSend({ topic: rtTopic(), event: "phx_join", payload: { config: { presence: { key: uid }, broadcast: { self: false }, private: false } }, ref: "1", join_ref: "1" });
+      rt.hb = setInterval(function () { rtSend({ topic: "phoenix", event: "heartbeat", payload: {}, ref: String(++rt.ref) }); }, 25000);
+    };
+    ws.onmessage = function (e) {
+      var m; try { m = JSON.parse(e.data); } catch (x) { return; }
+      if (m.event === "phx_reply" && m.ref === "1" && m.payload && m.payload.status === "ok") { rt.joined = true; rtTrack(); }
+      else if (m.event === "presence_state") { rt.state = m.payload || {}; counts(); }
+      else if (m.event === "presence_diff") {
+        var j = m.payload.joins || {}, l = m.payload.leaves || {};
+        Object.keys(l).forEach(function (k) {
+          var gone = (l[k].metas || []).map(function (x) { return x.phx_ref; });
+          if (rt.state[k]) { rt.state[k].metas = rt.state[k].metas.filter(function (x) { return gone.indexOf(x.phx_ref) < 0; }); if (!rt.state[k].metas.length) delete rt.state[k]; }
+        });
+        Object.keys(j).forEach(function (k) { rt.state[k] = rt.state[k] || { metas: [] }; rt.state[k].metas = rt.state[k].metas.concat(j[k].metas || []); });
+        counts();
+      }
+    };
+    ws.onclose = function () {
+      clearInterval(rt.hb); rt.ws = null; rt.joined = false;
+      if (rt.want) { clearTimeout(rt.retry); rt.retry = setTimeout(rtStart, 4000); }
+    };
+  }
+  function rtStop() { rt.want = false; clearTimeout(rt.retry); if (rt.ws) { try { rt.ws.close(); } catch (e) {} } rt.ws = null; rt.state = {}; }
+  function counts() {
+    var c = {}, total = 0;
+    Object.keys(rt.state).forEach(function (k) { var ms = rt.state[k].metas || []; var last = ms[ms.length - 1]; if (last && last.ch) { c[last.ch] = (c[last.ch] || 0) + 1; total++; } });
+    ov.querySelectorAll("[data-ch]").forEach(function (b) { var n = b.querySelector(".lv-n"); if (!n) { n = d.createElement("span"); n.className = "lv-n"; b.appendChild(n); } n.textContent = "👁 " + (c[b.dataset.ch] || 0); });
+    var w = ov.querySelector(".lv-watch"); if (w && cur) { var n2 = c[cur] || 0; w.textContent = "👁 " + n2.toLocaleString() + " watching now"; }
   }
 
   // ---------- schedule ----------
@@ -167,13 +211,14 @@
       (chs.length > 1 ? '<div class="lv-tabs" role="tablist">' + chs.map(function (c) {
         return '<button class="lv-tab" type="button" role="tab" data-ch="' + c.id + '" style="--c:' + c.color + '">' + (c.logo ? '<img src="' + c.logo + '" alt="">' : "") + esc(c.name) + "</button>";
       }).join("") + "</div>" : "") +
-      '<div class="lv-screen"><span class="lv-bug"></span><div id="lv-player"></div></div>' +
+      '<div class="lv-screen"><span class="lv-bug"></span><span class="lv-watch">👁 … watching now</span><div id="lv-player"></div></div>' +
       '<p class="lv-now">Now playing</p><h3 class="lv-title"></h3><div class="lv-bar"><i></i></div>' +
       '<p class="lv-now">Coming up</p><ul class="lv-guide"></ul></div>';
     wire();
     ov.querySelector("[data-out]").onclick = signOut;
     ov.querySelectorAll("[data-ch]").forEach(function (b) { b.onclick = function () { tune(b.dataset.ch); }; });
     ov.querySelector(".lv-guide").innerHTML = "<li><span>Loading the schedule…</span></li>";
+    rtStart();
     getData().then(function () { tune(curCh); }, function () { ov.querySelector(".lv-guide").innerHTML = "<li><span>Couldn't load the schedule. Check your connection.</span></li>"; });
   }
 
@@ -192,6 +237,7 @@
     ov.querySelectorAll("[data-ch]").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.ch === ch); });
     ov.querySelector(".lv-wrap").style.setProperty("--c", cfg.color || "#d90429");
     ov.querySelector(".lv-bug").textContent = "● LIVE · " + (cfg.name || "");
+    rtTrack(); counts();
     var c = DATA[ch], t = nowS(), a = at(ch, t), idx = a.i, off = a.off, begin = a.begin;
     if (forceIdx != null) { idx = forceIdx % c.items.length; off = 0; begin = t; }
     var it = c.items[idx]; curIdx = idx;
