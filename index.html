@@ -5618,5 +5618,123 @@ document.getElementById('espn-promo-x').addEventListener('click',function(e){e.p
   else setTimeout(show, 600);
 })();
 </script>
+<script id="hk-autoplay">
+/* HK:autoplay v1. Makes every YouTube player on the page start the moment a title is opened.
+   Tries to play with sound first. If the browser blocks that (iPhone Safari blocks sound autoplay in embeds),
+   it starts the video muted at once and shows a "Tap for sound" button over the player.
+   Works on plain embeds (enablejsapi=1) and on IFrame API players (LIVE), using YouTube's postMessage protocol. */
+(function () {
+  if (window.__hkAutoplay) return; window.__hkAutoplay = 1;
+  var YT_RE = /^https:\/\/www\.youtube(-nocookie)?\.com\/embed\//;
+  var GRACE = 1300;             // ms to wait for sound autoplay before falling back to muted
+  var wantMuted = false;        // once sound autoplay was blocked, later videos start muted until the viewer taps for sound
+  var S = [];                   // tracked players: {f, st, muted, timer, pill, armedAt}
+
+  var css = document.createElement("style"); css.id = "hk-autoplay-css";
+  css.textContent = ".hk-unmute{position:absolute;left:12px;top:12px;z-index:30;display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:0;border-radius:999px;background:rgba(0,0,0,.78);color:#fff;font:700 14px/1 system-ui,-apple-system,sans-serif;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:hkUm .3s ease both}" +
+    ".hk-unmute:hover{background:#000}.hk-unmute svg{width:18px;height:18px;fill:currentColor}" +
+    "@keyframes hkUm{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}";
+  (document.head || document.documentElement).appendChild(css);
+
+  function send(s, func, args) {
+    try { s.f.contentWindow.postMessage(JSON.stringify({ event: "command", func: func, args: args || [], id: 1, channel: "widget" }), "*"); } catch (e) {}
+  }
+  function listen(s) {
+    try { s.f.contentWindow.postMessage(JSON.stringify({ event: "listening", id: 1, channel: "widget" }), "*"); } catch (e) {}
+  }
+  function playing(s) { return s.st === 1 || s.st === 3; }
+
+  function pill(s) {
+    if (s.pill || !s.f.parentNode) return;
+    var p = s.f.parentNode;
+    if (getComputedStyle(p).position === "static") p.style.position = "relative";
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "hk-unmute"; b.setAttribute("aria-label", "Turn sound on");
+    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z"/></svg>Tap for sound';
+    b.addEventListener("click", function (e) {
+      e.preventDefault(); e.stopPropagation();
+      wantMuted = false; s.muted = false;
+      send(s, "unMute"); send(s, "setVolume", [100]); send(s, "playVideo");
+      unpill(s);
+      // If the browser paused it on unmute, nudge it again (YouTube's own unmute button remains as a backup)
+      setTimeout(function () { if (s.st === 2) send(s, "playVideo"); }, 700);
+    });
+    p.appendChild(b); s.pill = b;
+  }
+  function unpill(s) { if (s.pill && s.pill.parentNode) s.pill.parentNode.removeChild(s.pill); s.pill = null; }
+
+  function goMuted(s) {
+    s.muted = true; wantMuted = true; s.mutedAt = Date.now();
+    send(s, "mute"); send(s, "playVideo");
+    pill(s);
+  }
+  // Start (or restart) the watch for a freshly loaded video
+  function arm(s) {
+    clearTimeout(s.timer); s.armedAt = Date.now();
+    if (wantMuted) { goMuted(s); return; }   // sound was blocked earlier: don't make them wait again
+    send(s, "playVideo");
+    s.timer = setTimeout(function () { if (!playing(s)) goMuted(s); }, GRACE);
+  }
+
+  function track(f) {
+    if (f.__hk) return; f.__hk = 1;
+    var src = f.getAttribute("src") || "";
+    // Plain embeds need the JS API switched on to be controllable (sets it before the player boots)
+    if (YT_RE.test(src) && !/[?&]enablejsapi=1/.test(src)) {
+      src += (src.indexOf("?") < 0 ? "?" : "&") + "enablejsapi=1" + (/^https?:/.test(location.origin || "") && !/[?&]origin=/.test(src) ? "&origin=" + encodeURIComponent(location.origin) : "");
+      if (!/[?&]autoplay=1/.test(src)) src += "&autoplay=1";
+      if (!/[?&]playsinline=1/.test(src)) src += "&playsinline=1";
+      f.setAttribute("src", src);
+    }
+    var a = f.getAttribute("allow") || "";
+    if (!/autoplay/.test(a)) f.setAttribute("allow", (a ? a + "; " : "") + "autoplay; encrypted-media; picture-in-picture; fullscreen");
+    var s = { f: f, st: -9, muted: false, timer: 0, pill: null, pings: 0 };
+    S.push(s);
+    var ping = setInterval(function () {
+      if (!document.contains(f)) { clearInterval(ping); clearTimeout(s.timer); unpill(s); S.splice(S.indexOf(s), 1); return; }
+      if (s.st === -9 && s.pings++ < 20) listen(s);
+    }, 400);
+    f.addEventListener("load", function () { s.st = -9; s.pings = 0; listen(s); arm(s); });
+    listen(s);
+  }
+
+  window.addEventListener("message", function (ev) {
+    if (!/youtube(-nocookie)?\.com$/.test((ev.origin || "").replace(/^https?:\/\//, ""))) return;
+    var s = null; for (var i = 0; i < S.length; i++) if (S[i].f.contentWindow === ev.source) { s = S[i]; break; }
+    if (!s) return;
+    var d = ev.data; if (typeof d === "string") { try { d = JSON.parse(d); } catch (e) { return; } }
+    if (!d) return;
+    if (d.event === "onReady") {
+      if (s.st === -9) s.st = -1;
+      if (!s.armedAt || Date.now() - s.armedAt > 4000) arm(s);
+      else if (s.muted) { send(s, "mute"); send(s, "playVideo"); }
+      else send(s, "playVideo");
+    }
+    var st = d.event === "onStateChange" ? d.info : (d.info && typeof d.info.playerState === "number" ? d.info.playerState : null);
+    if (typeof st !== "number") return;
+    var prev = s.st; s.st = st;
+    if (st === 1 || st === 3) clearTimeout(s.timer);
+    // A new video loaded into the same player (LIVE channel change / next program): watch it too
+    if (st === -1 && prev !== -1 && prev !== -9) arm(s);
+    if (st === 5 && prev !== 5) arm(s);   // cued but not playing
+    // Unmuted with YouTube's own button: drop our pill (ignore stale reports from just before we muted)
+    if (d.info && d.info.muted === false && s.pill && Date.now() - (s.mutedAt || 0) > 2500) { s.muted = false; wantMuted = false; unpill(s); }
+  });
+
+  function scan(root) {
+    var list = (root.querySelectorAll ? root.querySelectorAll("iframe") : []);
+    for (var i = 0; i < list.length; i++) if (YT_RE.test(list[i].getAttribute("src") || "") || /youtube/.test(list[i].getAttribute("src") || "")) track(list[i]);
+    if (root.tagName === "IFRAME" && /youtube/.test(root.getAttribute("src") || "")) track(root);
+  }
+  new MutationObserver(function (ms) {
+    ms.forEach(function (m) {
+      if (m.type === "attributes") { if (m.target.tagName === "IFRAME" && /youtube/.test(m.target.getAttribute("src") || "")) track(m.target); return; }
+      m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); });
+    });
+  }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["src"] });
+  if (document.body) scan(document.body); else document.addEventListener("DOMContentLoaded", function () { scan(document.body); });
+})();
+
+</script>
 </body>
 </html>
