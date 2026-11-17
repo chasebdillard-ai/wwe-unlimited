@@ -5906,7 +5906,7 @@
         (LOOP ? '<section class="aw-sec aw-live" id="aw-live" aria-labelledby="aw-h-live"><div class="aw-sec__head"><div class="aw-sec__ttl"><p class="aw-kick">Live channel</p><h2 id="aw-h-live">AEW 24/7</h2><p class="aw-sec__blurb">Full Dynamite, Collision, Rampage, Dark and Elevation shows, airing around the clock. Tune in and it picks up wherever the broadcast is.</p></div></div><div class="aw-live__body" id="aw-live-body"></div></section>' : "") +
         first.map(section).join("") +
       "</div>" +
-      '<p class="aw-foot">Official AEW videos from the AEW, AEW on TV, TBS and HBO Max YouTube channels. Videos play from YouTube. Updated ' + esc(META.updated || "") + ".</p>";
+      '<p class="aw-foot">Official AEW videos from the AEW, AEW on TV and TBS YouTube channels. Videos play from YouTube. Updated ' + esc(META.updated || "") + ".</p>";
     built = true;
     v.addEventListener("click", onClick);
     v.addEventListener("keydown", function (e) { if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches(".aw-live__screen")) { e.preventDefault(); goLive(); } });
