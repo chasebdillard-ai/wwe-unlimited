@@ -5,9 +5,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>WWE Unlimited</title>
-    <link rel="icon" type="image/png" href="icon.png" />
-    <link rel="apple-touch-icon" href="icon.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="icon.png" />
+    <link rel="icon" type="image/png" href="icon_new.png" />
+    <link rel="apple-touch-icon" href="icon_new.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="icon_new.png" />
     <meta name="apple-mobile-web-app-title" content="WWE Unlimited" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -306,11 +306,12 @@
   <script id="eotn-data">window.EOTN_EVENTS=[[1794790800, "n5xNQPgR4Fg", "WWE Backlash 2008", 10132], [1794877200, "kJRzqQwZ7po", "WCW Halloween Havoc 1998", 11287], [1794963600, "uAUkvxxbNdM", "WWE NXT Feb. 23 & Mar. 2, 2010 Back-to-Back \u00b7 Part 1: Feb. 23", 2773], [1794966373, "Pr5_wHR2nyQ", "WWE NXT Feb. 23 & Mar. 2, 2010 Back-to-Back \u00b7 Part 2: Mar. 2", 2773]];</script>
 <style id="eotn-hero-css">.x-feat__bg img.x-eotn{object-position:center}.x-feat [data-h="tag"].is-eotn{color:#d4a017;letter-spacing:.14em}.x-feat .pill.is-live{background:#d90429;color:#fff}.eotn-strap{position:absolute;top:clamp(12px,2.2vw,22px);right:clamp(12px,2.2vw,22px);z-index:3;display:flex;align-items:stretch;font-family:Impact,"Arial Black","Helvetica Neue",Arial,sans-serif;text-transform:uppercase;font-style:italic;line-height:1;box-shadow:0 6px 22px rgba(0,0,0,.55);transform:skewX(-8deg);pointer-events:none}.eotn-strap[hidden]{display:none}.eotn-strap span{padding:.5em .75em;font-size:clamp(15px,2vw,26px);letter-spacing:.02em}.eotn-strap .a{background:#fff;color:#111}.eotn-strap .b{background:#d90429;color:#fff}.eotn-strap .b b{color:#ffd23f;font-weight:inherit}</style>
     <link rel="stylesheet" id="aw-css" href="aew.css" />
-  </head>
+  <style id="brand-css">.x-wm__logo{display:block;height:40px;width:auto;max-width:62vw}@media(min-width:900px){.x-wm__logo{height:46px}}</style>
+</head>
   <body>
     <div class="page" id="top">
       <header class="x-top">
-        <a class="x-logo x-wm" href="#home" aria-label="WWE Unlimited home"><img class="x-wm__img" src="wwe.png" alt="WWE" />Unlimited</a>
+        <a class="x-logo x-wm" href="#home" aria-label="WWE Unlimited home"><img class="x-wm__logo" src="unlimited_logo.png" alt="WWE Unlimited" /></a>
         <nav class="x-nav" aria-label="Main">
           <a href="#home" data-tab="home">Home</a>
           <a href="#nxt" data-tab="nxt">NXT</a>
@@ -329,10 +330,10 @@
       <main class="main">
         <div class="x-view" id="v-home">
           <section class="x-feat" data-hero="home" aria-roledescription="carousel" aria-label="Featured events"><div class="eotn-strap" hidden aria-hidden="true"><span class="a">Streams</span><span class="b" data-strap></span></div>
-            <div class="x-feat__bg" data-h="bg"><img class="x-poster x-aew" id="aew-poster" src="aew_coming.jpg" alt="AEW coming to WWE Unlimited" /><img class="x-poster x-eotn" id="eotn-poster" src="" alt="Event of the Night" /><img class="x-poster" id="ss-poster" src="survivor_series_2026_poster.jpg" alt="Survivor Series: WarGames, Houston, Saturday November 28: Roman Reigns behind the cage" /></div>
+            <div class="x-feat__bg" data-h="bg"><img class="x-poster x-aew" id="aew-poster" src="aew_now.jpg" alt="AEW now streaming on WWE Unlimited" /><img class="x-poster x-eotn" id="eotn-poster" src="" alt="Event of the Night" /><img class="x-poster" id="ss-poster" src="survivor_series_2026_poster.jpg" alt="Survivor Series: WarGames, Houston, Saturday November 28: Roman Reigns behind the cage" /></div>
             <div class="x-feat__copy">
               <p class="x-tag" data-h="tag">Featured</p>
-              <h1 data-h="title"><span class="x-wm"><img class="x-wm__img" src="wwe.png" alt="WWE" />Unlimited</span></h1>
+              <h1 data-h="title"><span class="x-wm"><img class="x-wm__logo" src="unlimited_logo.png" alt="WWE Unlimited" /></span></h1>
               <p class="x-sub" data-h="sub">Full events and episodes, free and official on WWE's YouTube channels.</p>
               <p class="x-meta" data-h="meta"></p>
               <div class="x-acts">
@@ -572,7 +573,7 @@
         </div>
       </main>
       <footer class="foot">
-        <p class="x-wm x-foot-wm"><img class="x-wm__img" src="wwe.png" alt="WWE" />Unlimited</p>
+        <p class="x-wm x-foot-wm"><img class="x-wm__logo" src="unlimited_logo.png" alt="WWE Unlimited" /></p>
         <p>Made for Chase. Every video is official and free on YouTube.</p>
         <p>Lists every upload on WWE, WWE Vault, WWE NXT, WCW, WWE Español, WWE Arabic, WWE Deutschland, WWE Europe, Lucha Libre AAA, UpUpDownDown and WWE Music YouTube channels as of Nov 13, 2026. Videos play from YouTube; some may be region- or age-restricted.</p>
         <a class="badge" href="https://hark.com/" target="_blank" rel="noopener"
@@ -4144,7 +4145,7 @@
         function where(f) { return items.filter(f).sort(sortY); }
         function isCat(it, cs) { return cs.indexOf(it.category) > -1; }
         var EPEV = ["Full Episodes", "Full Events"];
-        var AEW_SLIDE = { special: true, art: true, title: "AEW coming to WWE Unlimited" };
+        var AEW_SLIDE = { special: true, art: true, title: "AEW now streaming on WWE Unlimited" };
         var SS_SLIDE = { special: true, tag: "Curated playlist", title: "Road to Survivor Series: WarGames", sub: "393 videos · 1987 to 2026", badge: "Sat Nov 28 · 6 PM ET · Houston", go: "ss" };
         // EOTN:hero, tonight's (or the next) Event of the Night leads the home carousel
         var EOTN_SLIDE = (function () {
