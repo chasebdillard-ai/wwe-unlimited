@@ -101,3 +101,9 @@ body.aw-on .x-tabbar a[aria-current="page"] { color: #f3d27a; box-shadow: inset 
   .aw-sec__head { flex-direction: column; align-items: flex-start; gap: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { .aw-dot, .aw-live__badge b { animation: none; } .aw-card__art img, .aw-live__screen > img { transition: none; } }
+/* Keep the hub inside the phone's width (2026-11-17: the view's grid let the dial and rails stretch every section to ~4,700px) */
+#v-aew { min-width: 0; max-width: 100%; overflow-x: hidden; grid-template-columns: minmax(0, 1fr); }
+#v-aew > *, .aw-body > *, .aw-sec, .aw-live__body > * { min-width: 0; max-width: 100%; }
+.aw-dial { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.aw-rail { max-width: 100%; }
+@media (max-width: 720px) { .aw-live__screen { max-height: 56vw; } }
