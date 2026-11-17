@@ -305,6 +305,7 @@
     <link rel="stylesheet" id="nw-fonts-home" href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:wght@400;700&family=Oswald:wght@400;600&display=swap" />
   <script id="eotn-data">window.EOTN_EVENTS=[[1794790800, "n5xNQPgR4Fg", "WWE Backlash 2008", 10132], [1794877200, "kJRzqQwZ7po", "WCW Halloween Havoc 1998", 11287], [1794963600, "uAUkvxxbNdM", "WWE NXT Feb. 23 & Mar. 2, 2010 Back-to-Back \u00b7 Part 1: Feb. 23", 2773], [1794966373, "Pr5_wHR2nyQ", "WWE NXT Feb. 23 & Mar. 2, 2010 Back-to-Back \u00b7 Part 2: Mar. 2", 2773]];</script>
 <style id="eotn-hero-css">.x-feat__bg img.x-eotn{object-position:center}.x-feat [data-h="tag"].is-eotn{color:#d4a017;letter-spacing:.14em}.x-feat .pill.is-live{background:#d90429;color:#fff}.eotn-strap{position:absolute;top:clamp(12px,2.2vw,22px);right:clamp(12px,2.2vw,22px);z-index:3;display:flex;align-items:stretch;font-family:Impact,"Arial Black","Helvetica Neue",Arial,sans-serif;text-transform:uppercase;font-style:italic;line-height:1;box-shadow:0 6px 22px rgba(0,0,0,.55);transform:skewX(-8deg);pointer-events:none}.eotn-strap[hidden]{display:none}.eotn-strap span{padding:.5em .75em;font-size:clamp(15px,2vw,26px);letter-spacing:.02em}.eotn-strap .a{background:#fff;color:#111}.eotn-strap .b{background:#d90429;color:#fff}.eotn-strap .b b{color:#ffd23f;font-weight:inherit}</style>
+<style id="aew-css">.x-feat.is-art .x-feat__copy{visibility:hidden}.x-feat.is-art::after{background:none}.x-feat.is-art .eotn-strap{display:none}</style>
 </head>
   <body>
     <div class="page" id="top">
@@ -328,7 +329,7 @@
       <main class="main">
         <div class="x-view" id="v-home">
           <section class="x-feat" data-hero="home" aria-roledescription="carousel" aria-label="Featured events"><div class="eotn-strap" hidden aria-hidden="true"><span class="a">Streams</span><span class="b" data-strap></span></div>
-            <div class="x-feat__bg" data-h="bg"><img class="x-poster x-eotn" id="eotn-poster" src="" alt="Event of the Night" /><img class="x-poster" id="ss-poster" src="survivor_series_2026_poster.jpg" alt="Survivor Series: WarGames, Houston, Saturday November 28: Roman Reigns behind the cage" /></div>
+            <div class="x-feat__bg" data-h="bg"><img class="x-poster x-aew" id="aew-poster" src="aew_coming.jpg" alt="AEW coming to WWE Unlimited" /><img class="x-poster x-eotn" id="eotn-poster" src="" alt="Event of the Night" /><img class="x-poster" id="ss-poster" src="survivor_series_2026_poster.jpg" alt="Survivor Series: WarGames, Houston, Saturday November 28: Roman Reigns behind the cage" /></div>
             <div class="x-feat__copy">
               <p class="x-tag" data-h="tag">Featured</p>
               <h1 data-h="title"><span class="x-wm"><img class="x-wm__img" src="wwe.png" alt="WWE" />Unlimited</span></h1>
@@ -4097,6 +4098,7 @@
             el.classList.toggle("is-poster", !!it.special);
             var pb = q("play"), ib = q("info"), lb = q("list");
             delete pb.dataset.eotn; delete ib.dataset.eotn; q("tag").classList.remove("is-eotn"); var _st = el.querySelector(".eotn-strap"); if (_st) _st.hidden = !it.eotn; // EOTN:show
+            el.classList.toggle("is-art", !!it.art); if (it.art) { delete pb.dataset.play; delete pb.dataset.ssplay; delete ib.dataset.info; delete ib.dataset.go; delete lb.dataset.mylist; q("title").textContent = it.title; return; } // AEW:show
             if (it.eotn) {
               it.refresh();
               if (_st) _st.querySelector("[data-strap]").innerHTML = it.strap;
@@ -4142,6 +4144,7 @@
         function where(f) { return items.filter(f).sort(sortY); }
         function isCat(it, cs) { return cs.indexOf(it.category) > -1; }
         var EPEV = ["Full Episodes", "Full Events"];
+        var AEW_SLIDE = { special: true, art: true, title: "AEW coming to WWE Unlimited" };
         var SS_SLIDE = { special: true, tag: "Curated playlist", title: "Road to Survivor Series: WarGames", sub: "393 videos · 1987 to 2026", badge: "Sat Nov 28 · 6 PM ET · Houston", go: "ss" };
         // EOTN:hero, tonight's (or the next) Event of the Night leads the home carousel
         var EOTN_SLIDE = (function () {
@@ -4171,7 +4174,7 @@
           return s;
         })();
         if (!EOTN_SLIDE) { var _ep = document.getElementById("eotn-poster"); if (_ep) _ep.parentNode.removeChild(_ep); }
-        Hero("home", (EOTN_SLIDE ? [EOTN_SLIDE] : []).concat([SS_SLIDE]).concat(pick(FEATURED, items, byShow[SHOWS[0]])), function (it) { return it.show; });
+        Hero("home", [AEW_SLIDE].concat(EOTN_SLIDE ? [EOTN_SLIDE] : []).concat([SS_SLIDE]).concat(pick(FEATURED, items, byShow[SHOWS[0]])), function (it) { return it.show; });
         var nxtEvents = where(function (it) { return it.hub === "NXT" && it.category === "Full Events"; });
         Hero("nxt", pick([/^NXT TakeOver: Brooklyn –/, /^NXT TakeOver: Respect/, /^NXT TakeOver: New York/, /^NXT TakeOver: WarGames 2017/, /^NXT TakeOver: Stand & Deliver 2021 – Night 2/], nxtEvents, nxtEvents.filter(function (it) { return /TakeOver/.test(it.title); }).concat(nxtEvents)), function () { return "NXT Full Event"; });
         var wcwPPV = where(function (it) { return it.hub === "WCW" && it.category === "Full Events" && it.show !== "WCW Clash of the Champions"; });
