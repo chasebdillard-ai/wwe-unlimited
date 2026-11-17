@@ -107,3 +107,6 @@ body.aw-on .x-tabbar a[aria-current="page"] { color: #f3d27a; box-shadow: inset 
 .aw-dial { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 .aw-rail { max-width: 100%; }
 @media (max-width: 720px) { .aw-live__screen { max-height: 56vw; } }
+/* Home carousel: the AEW slide opens the hub (Chase, 2026-11-17) */
+.x-feat.is-art { cursor: pointer; }
+.x-feat.is-art::before { content: "Enter the AEW Hub \203A"; position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); z-index: 3; white-space: nowrap; padding: 14px 26px; background: linear-gradient(135deg, #f3d27a, #c99a3c 55%, #8a6420); color: #050505; font: 800 17px/1 "Barlow Condensed", "Archivo Black", sans-serif; letter-spacing: .06em; text-transform: uppercase; clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%); pointer-events: none; }
