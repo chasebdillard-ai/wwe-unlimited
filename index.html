@@ -304,6 +304,7 @@
   <style id="aew-css">.x-feat.is-art .x-feat__copy{visibility:hidden}.x-feat.is-art::after{background:none}.x-feat.is-art .eotn-strap{display:none}</style>
       <link rel="stylesheet" id="aw-css" href="aew.css" />
   <style id="brand-css">.x-wm__logo{display:block;height:40px;width:auto;max-width:62vw}@media(min-width:900px){.x-wm__logo{height:46px}}</style>
+<style id="wcw-css">.x-logo--wcw,.x-tabbar .x-logo--wcw{filter:drop-shadow(0 2px 4px rgba(0,0,0,.55))!important}</style>
 <script id="eotn-data">window.EOTN_EVENTS=[[1794790800, "n5xNQPgR4Fg", "WWE Backlash 2008", 10132], [1794877200, "kJRzqQwZ7po", "WCW Halloween Havoc 1998", 11287], [1794963600, "uAUkvxxbNdM", "WWE NXT Feb. 23 & Mar. 2, 2010 Back-to-Back \u00b7 Part 1: Feb. 23", 2773], [1794966373, "Pr5_wHR2nyQ", "WWE NXT Feb. 23 & Mar. 2, 2010 Back-to-Back \u00b7 Part 2: Mar. 2", 2773], [1795050000, "8wgfRDzr-ZM", "WWE Starrcade 2018", 9246]];</script>
 <style id="eotn-hero-css">.x-feat__bg img.x-eotn{object-position:center}.x-feat [data-h="tag"].is-eotn{color:#d4a017;letter-spacing:.14em}.x-feat .pill.is-live{background:#d90429;color:#fff}.eotn-strap{position:absolute;top:clamp(12px,2.2vw,22px);right:clamp(12px,2.2vw,22px);z-index:3;display:flex;align-items:stretch;font-family:Impact,"Arial Black","Helvetica Neue",Arial,sans-serif;text-transform:uppercase;font-style:italic;line-height:1;box-shadow:0 6px 22px rgba(0,0,0,.55);transform:skewX(-8deg);pointer-events:none}.eotn-strap[hidden]{display:none}.eotn-strap span{padding:.5em .75em;font-size:clamp(15px,2vw,26px);letter-spacing:.02em}.eotn-strap .a{background:#fff;color:#111}.eotn-strap .b{background:#d90429;color:#fff}.eotn-strap .b b{color:#ffd23f;font-weight:inherit}</style>
 </head>
@@ -4174,7 +4175,7 @@
           return s;
         })();
         if (!EOTN_SLIDE) { var _ep = document.getElementById("eotn-poster"); if (_ep) _ep.parentNode.removeChild(_ep); }
-        Hero("home", [AEW_SLIDE].concat(EOTN_SLIDE ? [EOTN_SLIDE] : []).concat([SS_SLIDE]).concat(pick(FEATURED, items, byShow[SHOWS[0]])), function (it) { return it.show; });
+        Hero("home", (EOTN_SLIDE ? [EOTN_SLIDE] : []).concat([SS_SLIDE]).concat(pick(FEATURED, items, byShow[SHOWS[0]])), function (it) { return it.show; });
         var nxtEvents = where(function (it) { return it.hub === "NXT" && it.category === "Full Events"; });
         Hero("nxt", pick([/^NXT TakeOver: Brooklyn –/, /^NXT TakeOver: Respect/, /^NXT TakeOver: New York/, /^NXT TakeOver: WarGames 2017/, /^NXT TakeOver: Stand & Deliver 2021 – Night 2/], nxtEvents, nxtEvents.filter(function (it) { return /TakeOver/.test(it.title); }).concat(nxtEvents)), function () { return "NXT Full Event"; });
         var wcwPPV = where(function (it) { return it.hub === "WCW" && it.category === "Full Events" && it.show !== "WCW Clash of the Champions"; });
