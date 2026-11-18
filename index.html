@@ -305,6 +305,7 @@
       <link rel="stylesheet" id="aw-css" href="aew.css" />
   <style id="brand-css">.x-wm__logo{display:block;height:40px;width:auto;max-width:62vw}@media(min-width:900px){.x-wm__logo{height:46px}}</style>
 <style id="wcw-css">.x-logo--wcw,.x-tabbar .x-logo--wcw{filter:drop-shadow(0 2px 4px rgba(0,0,0,.55))!important}</style>
+<script id="eotn-poster-data">window.EOTN_POSTER={"8wgfRDzr-ZM": {"t": "WWE STARRCADE 2018", "s": "Full event + unseen matches"}, "evq6wnWPrHs": {"t": "WWE IN ANAHEIM", "s": "March 13, 1998 \u00b7 Austin, Rock, Taker, Triple H"}};</script>
 <script id="eotn-data">window.EOTN_EVENTS=[[1794790800, "n5xNQPgR4Fg", "WWE Backlash 2008", 10132], [1794877200, "kJRzqQwZ7po", "WCW Halloween Havoc 1998", 11287], [1794963600, "uAUkvxxbNdM", "WWE NXT Feb. 23 & Mar. 2, 2010 Back-to-Back \u00b7 Part 1: Feb. 23", 2773], [1794966373, "Pr5_wHR2nyQ", "WWE NXT Feb. 23 & Mar. 2, 2010 Back-to-Back \u00b7 Part 2: Mar. 2", 2773], [1795050000, "8wgfRDzr-ZM", "WWE Starrcade 2018", 9246], [1795136400, "evq6wnWPrHs", "WWE in Anaheim, Calif., March 13, 1998", 6337]];</script>
 <style id="eotn-hero-css">.x-feat__bg img.x-eotn{object-position:center}.x-feat [data-h="tag"].is-eotn{color:#d4a017;letter-spacing:.14em}.x-feat .pill.is-live{background:#d90429;color:#fff}.eotn-strap{position:absolute;top:clamp(12px,2.2vw,22px);right:clamp(12px,2.2vw,22px);z-index:3;display:flex;align-items:stretch;font-family:Impact,"Arial Black","Helvetica Neue",Arial,sans-serif;text-transform:uppercase;font-style:italic;line-height:1;box-shadow:0 6px 22px rgba(0,0,0,.55);transform:skewX(-8deg);pointer-events:none}.eotn-strap[hidden]{display:none}.eotn-strap span{padding:.5em .75em;font-size:clamp(15px,2vw,26px);letter-spacing:.02em}.eotn-strap .a{background:#fff;color:#111}.eotn-strap .b{background:#d90429;color:#fff}.eotn-strap .b b{color:#ffd23f;font-weight:inherit}</style>
 </head>
@@ -330,7 +331,7 @@
       <main class="main">
         <div class="x-view" id="v-home">
           <section class="x-feat" data-hero="home" aria-roledescription="carousel" aria-label="Featured events"><div class="eotn-strap" hidden aria-hidden="true"><span class="a">Streams</span><span class="b" data-strap></span></div>
-            <div class="x-feat__bg" data-h="bg"><img class="x-poster x-eotn" id="eotn-poster" src="" alt="Event of the Night" /><img class="x-poster" id="ss-poster" src="survivor_series_2026_poster.jpg" alt="Survivor Series: WarGames, Houston, Saturday November 28: Roman Reigns behind the cage" /></div>
+            <div class="x-feat__bg" data-h="bg"><img class="x-poster x-eotn" id="eotn-poster" src="" alt="Event of the Night" /><img class="x-poster x-eotn" id="eotn-next-poster" src="" alt="Next Event of the Night" /><img class="x-poster" id="ss-poster" src="survivor_series_2026_poster.jpg" alt="Survivor Series: WarGames, Houston, Saturday November 28: Roman Reigns behind the cage" /></div>
             <div class="x-feat__copy">
               <p class="x-tag" data-h="tag">Featured</p>
               <h1 data-h="title"><span class="x-wm"><img class="x-wm__logo" src="unlimited_logo.png" alt="WWE Unlimited" /></span></h1>
@@ -4175,7 +4176,38 @@
           return s;
         })();
         if (!EOTN_SLIDE) { var _ep = document.getElementById("eotn-poster"); if (_ep) _ep.parentNode.removeChild(_ep); }
-        Hero("home", (EOTN_SLIDE ? [EOTN_SLIDE] : []).concat([SS_SLIDE]).concat(pick(FEATURED, items, byShow[SHOWS[0]])), function (it) { return it.show; });
+        // EOTN:next, the following night's pick, advertised right after the main slide
+        var EOTN_NEXT = (function () {
+          var L = window.EOTN_EVENTS || [], P = window.EOTN_POSTER || {}, now = Date.now() / 1000, cur = null, e = null;
+          var dk = function (x) { return new Date(x * 1000).toLocaleDateString("en-US", { timeZone: "America/New_York" }); };
+          for (var k = 0; k < L.length; k++) if (now < L[k][0] + L[k][3]) { cur = L[k]; break; }
+          if (!cur || !EOTN_SLIDE) return null;
+          try { for (k = 0; k < L.length; k++) if (L[k][0] > cur[0] && dk(L[k][0]) !== dk(cur[0])) { e = L[k]; break; } } catch (x) { return null; }
+          if (!e) return null;
+          var img = document.getElementById("eotn-next-poster"); if (img) { var _hq = "https://i.ytimg.com/vi/" + e[1] + "/hqdefault.jpg"; img.onerror = function () { img.onerror = null; img.src = _hq; }; img.onload = function () { if (img.naturalWidth && img.naturalWidth <= 120) { img.onload = null; img.src = _hq; } }; img.src = "https://i.ytimg.com/vi/" + e[1] + "/maxresdefault.jpg"; }
+          var pt = P[e[1]] || {}, wd = "", tm = "8:00 PM ET", hr = 20;
+          try {
+            wd = new Date(e[0] * 1000).toLocaleDateString("en-US", { weekday: "long", timeZone: "America/New_York" });
+            if (e[0] - now > 6 * 86400) wd += " " + new Date(e[0] * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "America/New_York" });
+            tm = new Date(e[0] * 1000).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) + " ET";
+            hr = +new Date(e[0] * 1000).toLocaleString("en-US", { hour: "numeric", hour12: false, timeZone: "America/New_York" }) % 24;
+          } catch (x) {}
+          var h12 = function (v) { v = (v + 24) % 24; return v % 12 || 12; };
+          var s = { special: true, eotn: true, next: true, title: pt.t || String(e[2]).replace(/\s+\u00b7\s+Part\s.*$/, "") };
+          s.refresh = function () {
+            var tmr = false; try { tmr = dk(e[0]) === dk(Date.now() / 1000 + 86400); } catch (x) {}
+            s.tag = "Coming " + wd;
+            s.sub = (pt.s ? pt.s + ". " : "") + wd + " at " + tm + " on WWE Unlimited Live, Channel 4. Set a reminder and watch together.";
+            s.badge = wd + " \u00b7 " + tm; s.live = false;
+            s.strap = "<b>" + (tmr ? "Tomorrow" : wd) + "</b> at " + h12(hr) + "/" + h12(hr - 1) + '<small style="text-transform:none;font-size:1em">c</small>';
+            s.btn = "&#9654; Tune In";
+          };
+          s.refresh();
+          return s;
+        })();
+        if (!EOTN_NEXT) { var _np = document.getElementById("eotn-next-poster"); if (_np) _np.parentNode.removeChild(_np); }
+        // EOTN:nextend
+        Hero("home", (EOTN_SLIDE ? [EOTN_SLIDE] : []).concat(EOTN_NEXT ? [EOTN_NEXT] : []).concat([SS_SLIDE]).concat(pick(FEATURED, items, byShow[SHOWS[0]])), function (it) { return it.show; });
         var nxtEvents = where(function (it) { return it.hub === "NXT" && it.category === "Full Events"; });
         Hero("nxt", pick([/^NXT TakeOver: Brooklyn –/, /^NXT TakeOver: Respect/, /^NXT TakeOver: New York/, /^NXT TakeOver: WarGames 2017/, /^NXT TakeOver: Stand & Deliver 2021 – Night 2/], nxtEvents, nxtEvents.filter(function (it) { return /TakeOver/.test(it.title); }).concat(nxtEvents)), function () { return "NXT Full Event"; });
         var wcwPPV = where(function (it) { return it.hub === "WCW" && it.category === "Full Events" && it.show !== "WCW Clash of the Champions"; });
